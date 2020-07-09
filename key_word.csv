@@ -1,0 +1,2 @@
+host,user,passwd,db,table,port,charset
+127.0.0.1,dbuser,20200428,fruveg,Daniel_news_test,3306,utf8
