@@ -1,5 +1,5 @@
 '''
-get banana news, chinatimes
+get banana news, chinatimes list
 input : N/A
 output : article_list, update_or_not
 '''
@@ -144,7 +144,7 @@ def fetch_db_newest():
    '''
 
    # fetch key_word
-   key_word = pd.read_csv(r'{}/key_word.csv'.format(os.getcwd()))
+   key_word = pd.read_csv(r'{}/01_ref_data/key_word.csv'.format(os.getcwd()))
 
    try:
       # connect database
@@ -156,7 +156,7 @@ def fetch_db_newest():
                            charset=str(key_word.loc[0, "charset"]))
 
       sql_str = 'SELECT * FROM fruveg.Daniel_news_test ' \
-                'where web_name = "chinatimes" and related = 1 ' \
+                'where web_name = "chinatimes"  ' \
                 'order by publish_time DESC limit 1;'
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 

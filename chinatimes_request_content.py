@@ -2,13 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 import sys
 import time
+import random
 
 
-def main():
-    pass
+def main(url):
 
-def request_content(url):
-    res = request_url(self.url)
+    res = request_url(url)
 
     sub_soup = BeautifulSoup(res.text, 'html.parser')
     all_text = sub_soup.select('div[class ="col-xl-11"] p')
@@ -17,6 +16,7 @@ def request_content(url):
         content += all_text[j].text
         if all_text[j].text != '':
             content += "\n"
+    return content
 
 def request_url(url):
    '''
@@ -73,6 +73,23 @@ def request_url(url):
 
    # if request normal, return request
    return res
+
+def delay(x=1):
+   '''
+   set system delay
+   :param x: delay how many second
+   :return:
+   '''
+
+   # randon 1 ~ x second
+   t = random.randint(1, x)
+
+   # for delay loop
+   for y in range(1, t+1):
+      if y < t:
+         # print("\rdelay {:>2d} 秒".format(t - y), end="")
+         time.sleep(1)
+   # print("\rrequest finish ")
 
 if __name__ == "__main__":
     main()
