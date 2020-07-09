@@ -1,7 +1,8 @@
 '''
-get banana news, chinatime
+get banana news, chinatimes
+input : N/A
+output : article_list, update_or_not
 '''
-
 
 from bs4 import BeautifulSoup
 import requests
@@ -13,95 +14,128 @@ import pandas as pd
 import time
 import random
 
-
 def main():
    '''
-
    :return: compare_result, article_list
-
    '''
 
-   # check log file exist ornot
-   func_check_file("log_file")
+   # check log folder exist or not
+   func_check_folder("log_folder")
 
-   # fetch db newest data
+   # call fetch_db_newest function, fetch db newest data
    db_neswest_data = fetch_db_newest()
-   # print(db_neswest_data)
 
-   # if news title contain exclude word, not to catch
+   # if news title contain exclude word, not to fetch
    title_exclude_word = ['香蕉船', '香蕉哥哥', '香蕉新樂園', '香蕉伯', 'YOYO', 'yoyo', '正顎', '香蕉男', '香蕉」', '香蕉水', '旺仔', \
               '想當香蕉', '流血', '硬', '黑蕉', '兒童界', '香蕉機', '香蕉槍', '香蕉球', 'GG']
 
-   # f news tag contain exclude word, not to catch
+   # if news tag contain exclude word, not to fetch
    tag_exclude_word = ['娛樂']
 
+   # search page
    url = "https://www.chinatimes.com/Search/%E9%A6%99%E8%95%89?chdtv"
+
+   # call request url function
    res = request_url(url)
 
+   # use beautifulsoup
    soup = BeautifulSoup(res.text, 'html.parser')
-   total_pages = int(str(soup.select('a[class="page-link"]')[-1]).split('page=')[1].split('">')[0])
 
+   # capture total pages
+   total_pages = int(str(soup.select('a[class="page-link"]')[-1]).split('page=')[1].split('">')[0])
    # print("total pages : {:>3}".format(total_pages))
 
+   # init article_compare_result, default False
    article_compare_result = False
+
+   # init update_or_not, default False
    update_or_not = False
+
+   # init article_list
    article_list = []
 
+   # scan search page
    for i in range(1, total_pages+1):
 
+      # search page
       url = 'https://www.chinatimes.com/Search/%E9%A6%99%E8%95%89?page={}&chdtv'.format(i)
 
+      # call request url function
       res = request_url(url)
+
+      # use beautifulsoup
       soup = BeautifulSoup(res.text, 'html.parser')
+
+      # capture all text
       all_text = soup.select('div[class="col"]')
 
+      # scan one page article
       for j in all_text:
 
+         # compare web article publish time and db newest data publish time, data scan finish
          if datetime.datetime.strptime(str(j.select('time')[0]).split('datetime="')[1].split('"><')[0], "%Y-%m-%d %H:%M") \
                  <= db_neswest_data['publish_time']:
             article_compare_result = True
             break
 
+         # web have new data, need to update news page
          update_or_not = True
 
+         # capture article data
          web_class = j.select('div [class="category"]')[0].text
          title = j.select('h3')[0].text
          publish_time = datetime.datetime.strptime(str(j.select('time')[0]).split('datetime="')[1].split('"><')[0], "%Y-%m-%d %H:%M")
          sub_url = j.select('h3 a')[0]['href']
 
+         # init row data (for one article)
          row = {}
 
+         # store article data to row
          row['publish_time'] = publish_time
          row['web_class'] = web_class
          row['title'] = title
          row['url'] = sub_url
 
+         # call excude_in function and if meet the conditions, store to article_list
          if (not exclude_in(title, title_exclude_word) and (not exclude_in(web_class, tag_exclude_word))) and sub_url != "":
             article_list.append(row)
-            # print(row)
-      # print(article_list)
-
+      # data scan finish
       if article_compare_result == True:
          break
 
+   # return article_list and need update or not
    return article_list, update_or_not
 
-def func_check_file(sub_keyword):
+def func_check_folder(sub_keyword):
+   '''
+   confirm have log folder or not
+   :param sub_keyword: log folder name
+   '''
+
    resource_path = r'{}/'.format(os.getcwd()) + sub_keyword
 
-   # 檢查目錄是否存在, 如已存在則強制刪除目錄並再次建立目錄
+   # confirm folder exist or not
    if os.path.exists(resource_path):
       pass
-   else:  # 目錄不存在, 則建立新目錄
+   else:  # if no exist, make a new filder
       os.mkdir(resource_path)
 
+   today = datetime.date.today()
+
+   # write a space to log file
+   print(" ", file=open("{}/log_folder/log_{}.txt".format(os.getcwd(),today), "a"))
 
 def write_log(log):
-   """ log function """
+   '''
+   write log to log file
+   :param log: log message
+   '''
+
    now = datetime.datetime.now()
    today = datetime.date.today()
-   print("{}, {}".format(now, log), file=open("{}/log_file/log_{}.txt".format(os.getcwd(),today), "a"))
 
+   # Standard output to log file
+   print("{}, {}".format(now, log), file=open("{}/log_folder/log_{}.txt".format(os.getcwd(),today), "a"))
 
 def fetch_db_newest():
    '''
@@ -134,19 +168,27 @@ def fetch_db_newest():
 
    db.close()
 
+   # init db_neswest_data dict
    db_neswest_data = {}
-   db_neswest_data['publish_time'] = datetime.datetime.strptime(str(db_neswest_data_df.loc[0,'publish_time']), "%Y-%m-%d %H:%M:%S")
+   # store db newest data to dict
+   db_neswest_data['publish_time'] = datetime.datetime.strptime(str(db_neswest_data_df.loc[0,'publish_time']),
+                                                                "%Y-%m-%d %H:%M:%S")
    db_neswest_data['web_class'] = str(db_neswest_data_df.loc[0,'web_class'])
    db_neswest_data['title'] = str(db_neswest_data_df.loc[0,'title'])
    db_neswest_data['url'] = str(db_neswest_data_df.loc[0,'url'])
 
-   return db_neswest_data # db_neswest_data (dict format)
+   # return db_neswest_data (dict format)
+   return db_neswest_data
 
 def request_url(url):
    '''
-
-   :return:
+   use url to request request
+   :param url: url
+   :return: request
    '''
+
+   # call delay function, random 1 ~ 5 second
+   delay(5)
 
    # proxy setting
    proxy = ''
@@ -159,8 +201,8 @@ def request_url(url):
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36'
    }
 
+   # request a request
    try:
-
       if proxy != '':
          print("proxy = True")
          res = requests.get(url, headers=headers, proxies=proxies)
@@ -172,7 +214,8 @@ def request_url(url):
       write_log(msg)
       print(err)
 
-      t = 300
+      # if first requset error, delay 180 second
+      t = 180
       time.sleep(t)
 
       if proxy != '':
@@ -185,19 +228,49 @@ def request_url(url):
       write_log("{}".format(msg))  # ~~~~~
 
    except:
+      # if request second error, program stop
       msg = "04.Unable to request data again, stop program.\n"
       write_log("{}".format(msg))  # ~~~~~
       sys.exit(0)
 
+   # if request normal, return request
    return res
 
-
 def exclude_in(string, exclude_list):
+   '''
+
+   :param string:
+   :param exclude_list: eclude word list
+   :return: True or False
+   '''
+
    for x in range(len(exclude_list)):
       if exclude_list[x] in string:
+         # if exist, return True
          return True
+   # if not exist, return False
    return False
 
-if __name__ == "__main__":
+def delay(x=1):
+   '''
+   set system delay
+   :param x: delay how many second
+   :return:
+   '''
 
+   # randon 1 ~ x second
+   t = random.randint(1, x)
+
+   # for loop for delay
+   for y in range(1, t+1):
+      if y < t:
+         # print("\rdelay {:>2d} 秒".format(t - y), end="")
+         time.sleep(1)
+   # print("\rrequest finish ")
+
+
+if __name__ == "__main__":
+   '''
+   main function
+   '''
    main()
