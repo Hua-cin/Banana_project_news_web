@@ -261,13 +261,12 @@ def delay(x=1):
    # randon 1 ~ x second
    t = random.randint(1, x)
 
-   # for loop for delay
+   # for delay loop
    for y in range(1, t+1):
       if y < t:
          # print("\rdelay {:>2d} 秒".format(t - y), end="")
          time.sleep(1)
    # print("\rrequest finish ")
-
 
 if __name__ == "__main__":
    '''
