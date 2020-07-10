@@ -36,7 +36,7 @@ def ltn_list():
    tag_exclude_word = ['娛樂']
 
    # search page
-   url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89"
+   url = "https://news.ltn.com.tw/topic/%E9%A6%99%E8%95%89"
 
    # call request url function
    res = request_url(url)
@@ -47,8 +47,8 @@ def ltn_list():
    # print(soup)
 
    # capture total pages
-   total_pages = int(str(soup.select('div [class="p_last"]')).split('page=')[1].split('">》')[0])
-   # print("total pages : {:>3}".format(total_pages))
+   pages = int(str(soup.select('div [class="p_last"]')).split('"')[-2].split('/')[-1])
+   # print("搜尋結果共{:>3}頁".format(pages))
 
    # init article_compare_result, default False
    article_compare_result = False
@@ -60,10 +60,11 @@ def ltn_list():
    article_list = []
 
    # scan search page
-   for i in range(1, total_pages+1):
+   # for i in range(1, total_pages+1):
+   for i in range(1, 2):
 
       # search page
-      url = 'https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&page={}'.format(i)
+      url = 'https://news.ltn.com.tw/topic/%E9%A6%99%E8%95%89/{}'.format(i)
 
       # call request url function
       res = request_url(url)
@@ -78,37 +79,39 @@ def ltn_list():
       for j in all_text:
 
          if j.select('span') != []:
+            # print(j)
+
             if len(j.select('span')[0].text.split(' ')) == 1:
-              publish_time = datetime.datetime.strptime(j.select('span')[0].text, "%Y-%m-%d")
+               publish_time = datetime.datetime.strptime(j.select('span')[0].text, "%Y-%m-%d")
             else:
-              publish_time = datetime.datetime.strptime(j.select('span')[0].text, "%Y-%m-%d %H:%M")
+               publish_time = datetime.datetime.strptime(j.select('span')[0].text, "%Y-%m-%d %H:%M")
 
             # compare web article publish time and db newest data publish time, data scan finish
             if publish_time <= db_neswest_data['publish_time']:
-              article_compare_result = True
-              break
+               article_compare_result = True
+               break
 
             # web have new data, need to update news page
             update_or_not = True
 
-            # capture article data
-            web_class = ' '
+            web_class = j.select_one('a[class="immtag"]').text
+            if web_class == "":
+               web_class = "其他"
+            row = {}
+
+            #  store article data to row
             title = j.select('a[class="tit"]')[0].text
             sub_url = j.select('a[class="tit"]')[0]['href']
 
-
-            # init row data (for one article)
-            row = {}
-
-            # store article data to row
             row['publish_time'] = publish_time
-            row['title'] = title
+            row['web_class']= web_class
+            row['title']= title
             row['url'] = sub_url
-            row['web_class'] = web_class
+            # print(row)
 
-            # call excude_in function and if meet the conditions, store to article_list
-            if not exclude_in(title, title_exclude_word) and sub_url != "":
-              article_list.append(row)
+            if (not exclude_in(title, title_exclude_word) and (not exclude_in(web_class, tag_exclude_word))) and sub_url != "":
+               article_list.append(row)
+               print(title)
 
       # data scan finish
       if article_compare_result == True:

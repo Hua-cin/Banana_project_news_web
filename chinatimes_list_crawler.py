@@ -15,6 +15,9 @@ import time
 import random
 
 def main():
+   pass
+
+def ltn_list():
    '''
    :return: compare_result, article_list
    '''
