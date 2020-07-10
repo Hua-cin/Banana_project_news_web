@@ -10,6 +10,7 @@ if __name__ == '__main__':
     # return article list and judge need update or not result
     chinatimes_article_list, chinatimes_need_update = chinatimes_list_crawler.ltn_list()
 
+    # if need, update chinatimes
     if chinatimes_need_update:
         for i in range(len(chinatimes_article_list)):
             reg_news = news_object.News()
@@ -23,11 +24,13 @@ if __name__ == '__main__':
     ltn_for_tag = False
 
     # return article list and judge need update or not result
+    # choice which type webpage for ltn web
     if ltn_for_tag: # for have tag web
         ltn_article_list, ltn_need_update = ltn_list_crawler_for_tag.ltn_list()
     else:
         ltn_article_list, ltn_need_update = ltn_list_crawler.ltn_list()
 
+    # if need, update chinatimes
     if ltn_need_update:
         for i in range(len(ltn_article_list)):
             reg_news = news_object.News()
@@ -36,3 +39,4 @@ if __name__ == '__main__':
             reg_news.upload_to_db()
     else:
         print("ltn no need update!!")
+

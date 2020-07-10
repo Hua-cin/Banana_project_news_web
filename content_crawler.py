@@ -66,7 +66,7 @@ def request_url(url):
    '''
 
    # call delay function, random 1 ~ 5 second
-   delay(5)
+   delay(10)
 
    # proxy setting
    proxy = ''

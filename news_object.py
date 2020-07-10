@@ -112,10 +112,11 @@ class News:
         else:
             print("無相關")
             result = 0
+        # print result and title
         print(self.title)
         print("-----------------")
-        # return judgt result
 
+        # return judgt result
         return result
 
     def upload_to_db(self):
