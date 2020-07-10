@@ -22,13 +22,21 @@ class News:
         self.url = ''
         self.related = 99
 
+    def allocation(self, web, article_dict):
+        self.web_name = web
+        self.publish_time = article_dict['publish_time']
+        self.web_class = rticle_dict['web_class']
+        self.title = rticle_dict['title']
+        self.url = rticle_dict['url']
+
+
     def related_or_not(self):
         '''
 
         :return:
         '''
 
-        content = chinatimes_request_content.main(self.url)
+        content = chinatimes_request_content.chinatimes_content(self.url)
         # res = request_url(self.url)
         #
         # sub_soup = BeautifulSoup(res.text, 'html.parser')

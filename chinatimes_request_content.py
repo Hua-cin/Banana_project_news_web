@@ -4,8 +4,10 @@ import sys
 import time
 import random
 
+def main():
+   pass
 
-def main(url):
+def chinatimes_content(url):
 
     res = request_url(url)
 
