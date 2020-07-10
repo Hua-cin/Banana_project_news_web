@@ -2,21 +2,53 @@ from bs4 import BeautifulSoup
 import requests
 import sys
 import time
-
+import random
 
 def main():
-    pass
+   pass
 
-def request_content(url):
-    res = request_url(self.url)
+def chinatimes_content(url):
+    '''
 
+    :param url: want requent url
+    :return: chinatimes url content
+    '''
+
+    # call request url function
+    res = request_url(url)
     sub_soup = BeautifulSoup(res.text, 'html.parser')
+
+    # capture need content
     all_text = sub_soup.select('div[class ="col-xl-11"] p')
     content = ""
+
     for j in range(len(all_text)):
         content += all_text[j].text
         if all_text[j].text != '':
             content += "\n"
+
+    # return chinatimes url content
+    return content
+
+def ltn_content(url):
+    """
+
+    :param url:
+    :return:
+    """
+    '''    
+                      **                                             **  **                         
+             ***      *********               ***          ***       **  ********       ***
+           **   **    ***   ***             **   **      **   **         ***  ***     **   **
+         **       **  **     **   ****    **       **  **       **   **  **    **   **       **
+           **   **    **     **             **   ****    **   **     **  **    **     **   ****
+             ***      **     **               ***  **      ***       **  **    **       ***  **
+                                                   **                                        ** 
+                                           **      **                                **      ** 
+                                            **    **                                  **    ** 
+                                               **                                        **   
+    '''
+
 
 def request_url(url):
    '''
@@ -73,6 +105,23 @@ def request_url(url):
 
    # if request normal, return request
    return res
+
+def delay(x=1):
+   '''
+   set system delay
+   :param x: delay how many second
+   :return: N/A
+   '''
+
+   # randon 1 ~ x second
+   t = random.randint(1, x)
+
+   # for delay loop
+   for y in range(1, t+1):
+      if y < t:
+         # print("\rdelay {:>2d} 秒".format(t - y), end="")
+         time.sleep(1)
+   # print("\rrequest finish ")
 
 if __name__ == "__main__":
     main()
