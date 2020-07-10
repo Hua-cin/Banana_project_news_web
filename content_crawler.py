@@ -5,7 +5,7 @@ import time
 import random
 
 def main():
-   pass
+    pass
 
 def chinatimes_content(url):
     '''
@@ -42,18 +42,20 @@ def ltn_content(url):
     :param url:
     :return:
     """
-    '''    
-                      **                                             **  **                         
-             ***      *********               ***          ***       **  ********       ***
-           **   **    ***   ***             **   **      **   **         ***  ***     **   **
-         **       **  **     **   ****    **       **  **       **   **  **    **   **       **
-           **   **    **     **             **   ****    **   **     **  **    **     **   ****
-             ***      **     **               ***  **      ***       **  **    **       ***  **
-                                                   **                                        ** 
-                                           **      **                                **      ** 
-                                            **    **                                  **    ** 
-                                               **                                        **   
-    '''
+    res = request_url(url)
+    sub_soup = BeautifulSoup(res.text, 'html.parser')
+
+    all_text = sub_soup.select('div[class ="text"] p')
+    drop_text = sub_soup.select('div[class ="text"] p[class]')
+
+    content = ""
+    for z in range(len(all_text)):
+        if all_text[z] not in drop_text:
+            content += (all_text[z].text+"\n")
+
+    web_tag = ' '
+    # return ltn url content
+    return content, web_tag
 
 
 def request_url(url):
