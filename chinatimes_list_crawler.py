@@ -144,7 +144,7 @@ def fetch_db_newest():
    '''
 
    # fetch key_word
-   key_word = pd.read_csv(r'{}/01_ref_data/key_word.csv'.format(os.getcwd()))
+   key_word = pd.read_csv(r'{}/ref_data/key_word.csv'.format(os.getcwd()))
 
    try:
       # connect database

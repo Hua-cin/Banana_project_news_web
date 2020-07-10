@@ -18,7 +18,7 @@ def chinatimes_content(url):
     res = request_url(url)
     sub_soup = BeautifulSoup(res.text, 'html.parser')
 
-    # capture need content
+    # capture content
     all_text = sub_soup.select('div[class ="col-xl-11"] p')
     content = ""
 
@@ -27,8 +27,14 @@ def chinatimes_content(url):
         if all_text[j].text != '':
             content += "\n"
 
+    # capture tag
+    tag = sub_soup.select('span[class="hash-tag"]')
+    web_tag = tag[0].text.replace('#','')
+    for y in range(1, len(tag)):
+        web_tag += (';'+tag[y].text.replace('#',''))
+
     # return chinatimes url content
-    return content
+    return content, web_tag
 
 def ltn_content(url):
     """

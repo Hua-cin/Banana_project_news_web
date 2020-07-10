@@ -25,6 +25,7 @@ class News:
         self.web_class = ''
         self.title= ''
         self.url = ''
+        self.web_tag = ''
         self.related = 99
 
     def allocation(self, web, row_dict):
@@ -51,10 +52,10 @@ class News:
         """
 
         # call content_function to request content
-        content = func_content(self.url)
+        content, self.web_tag = func_content(self.url)
 
         # fetch base data, list have dict
-        base = pd.read_csv(r'{}/01_ref_data/base.csv'.format(os.getcwd()))
+        base = pd.read_csv(r'{}/ref_data/base.csv'.format(os.getcwd()))
         base_dict_list = base.to_dict('records')
 
         # call jieba function, and get wordcut dict
@@ -114,6 +115,7 @@ class News:
         print(self.title)
         print("-----------------")
         # return judgt result
+
         return result
 
     def upload_to_db(self):
@@ -130,9 +132,9 @@ class News:
             # setup autocommit false
             db.autocommit(False)
             now = datetime.datetime.now()
-            sql_str = 'insert into Daniel_news_test (web_name, publish_time, web_class, title, url, related, log_dt) ' \
-                      'values(\'{}\', \'{}\', \'{}\', \'{}\', \'{}\',\'{}\', \'{}\');' \
-                .format(self.web_name, self.publish_time, self.web_class, self.title, self.url, self.related, now)
+            sql_str = 'insert into Daniel_news_test (web_name, publish_time, web_class, title, url, related, web_tag, log_dt) ' \
+                      'values(\'{}\', \'{}\', \'{}\', \'{}\', \'{}\',\'{}\', \'{}\', \'{}\');' \
+                .format(self.web_name, self.publish_time, self.web_class, self.title, self.url, self.related, self.web_tag, now)
 
             # execute insert data
             cursor.execute(sql_str)
@@ -211,7 +213,7 @@ def connect_db():
     """connect database"""
 
     # fetch key_word
-    key_word = pd.read_csv(r'{}/01_ref_data/key_word.csv'.format(os.getcwd()))
+    key_word = pd.read_csv(r'{}/ref_data/key_word.csv'.format(os.getcwd()))
 
     db = MySQLdb.connect(host=str(key_word.loc[0, 'host']),
                          user=str(key_word.loc[0, 'user']),
@@ -228,14 +230,14 @@ def func_jieba(text):
     '''
 
     # fetch stop word list
-    stopword_path = r'./01_ref_data/stopword.txt'
+    stopword_path = r'./ref_data/stopword.txt'
     stopword_list = []
     with open(stopword_path, 'r', encoding='utf-8') as f_stop:
         for temp in f_stop.readlines():
             stopword_list.append(temp.replace('\n', ''))
 
     # fetch mydict list
-    jieba.load_userdict(r'./01_ref_data/mydict.txt')
+    jieba.load_userdict(r'./ref_data/mydict.txt')
     s = jieba.cut(text)
     jieba_word_count = {}
     for i in s:
