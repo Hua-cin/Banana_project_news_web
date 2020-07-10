@@ -111,6 +111,8 @@ class News:
         else:
             print("無相關")
             result = 0
+        print(self.title)
+        print("-----------------")
         # return judgt result
         return result
 
