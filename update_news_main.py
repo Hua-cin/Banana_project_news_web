@@ -15,8 +15,9 @@ if __name__ == '__main__':
         for i in range(len(chinatimes_article_list)):
             reg_news = news_object.News()
             reg_news.allocation('chinatimes', chinatimes_article_list[i])
-            reg_news.related = reg_news.related_or_not(content_crawler.chinatimes_content)
-            reg_news.upload_to_db()
+            reg_news.related, content_exist = reg_news.related_or_not(content_crawler.chinatimes_content)
+            if content_exist:
+                reg_news.upload_to_db()
         print("chinatimes update finish!!")
     else:
         print("chinatimes no need update!!")
@@ -36,8 +37,9 @@ if __name__ == '__main__':
         for i in range(len(ltn_article_list)):
             reg_news = news_object.News()
             reg_news.allocation('ltn', ltn_article_list[i])
-            reg_news.related = reg_news.related_or_not(content_crawler.ltn_content)
-            reg_news.upload_to_db()
+            reg_news.related, content_exist = reg_news.related_or_not(content_crawler.ltn_content)
+            if content_exist:
+                reg_news.upload_to_db()
         print("ltn update finish!!")
     else:
         print("ltn no need update!!")

@@ -102,7 +102,7 @@ def ltn_list():
          row['url'] = sub_url
 
          # call excude_in function and if meet the conditions, store to article_list
-         if (not exclude_in(title, title_exclude_word) and (not exclude_in(web_class, tag_exclude_word))) and sub_url != "":
+         if not exclude_in(title, title_exclude_word) and sub_url != "":
             article_list.append(row)
       # data scan finish
       if article_compare_result == True:
