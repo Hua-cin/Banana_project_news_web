@@ -5,6 +5,8 @@ import time
 import random
 
 def main():
+    # content, web_tag, article_time = ltn_content("https://news.ltn.com.tw/news/life/paper/1381150")
+
     pass
 
 def chinatimes_content(url):
@@ -27,6 +29,11 @@ def chinatimes_content(url):
         if all_text[j].text != '':
             content += "\n"
 
+    article_date = sub_soup.select('span[class="date"]')[0].text.replace("/","-")
+    article_hour = sub_soup.select('span[class="hour"]')[0].text
+
+    article_time = article_date + ' ' + article_hour
+
     # capture tag
     tag = sub_soup.select('span[class="hash-tag"]')
     web_tag = tag[0].text.replace('#','')
@@ -34,7 +41,7 @@ def chinatimes_content(url):
         web_tag += (';'+tag[y].text.replace('#',''))
 
     # return chinatimes url content
-    return content, web_tag
+    return content, web_tag, article_time
 
 def ltn_content(url):
     """
@@ -42,21 +49,63 @@ def ltn_content(url):
     :param url:
     :return:
     """
+    article_time = 0
+    content = ""
+
     res = request_url(url)
     sub_soup = BeautifulSoup(res.text, 'html.parser')
 
+    # type 1
     all_text = sub_soup.select('div[class ="text"] p')
     drop_text = sub_soup.select('div[class ="text"] p[class]')
 
-    content = ""
     for z in range(len(all_text)):
         if all_text[z] not in drop_text:
             content += (all_text[z].text+"\n")
+    if content != "":
+        article_time = sub_soup.select('span[class ="time"]')[0].text.strip()
+
+    # type 2
+    if content == "":
+
+        all_text = sub_soup.select('div[class ="text boxTitle boxText"] p')
+        drop_text = sub_soup.select('div[class ="text boxTitle boxText"] p[class]')
+
+        for z in range(len(all_text)):
+            if all_text[z] not in drop_text:
+                content += (all_text[z].text+"\n")
+        if content != "":
+            article_time = sub_soup.select('span[class="time"]')[0].text.strip()
+
+    # type 3
+    if content == "":
+
+        all_text = sub_soup.select('div[class="cont"] p')
+        drop_text = sub_soup.select('div[class="cont"] p[class]')
+
+        for z in range(len(all_text)):
+            if all_text[z] not in drop_text:
+                content += (all_text[z].text+"\n")
+        if content != "":
+            article_time = sub_soup.select('div[class="writer_date"]')[0].text.strip()
+
+    # type 4
+    if content == "":
+
+        all_text = sub_soup.select('div[class="news_content"] p')
+        drop_text = sub_soup.select('div[class="news_content"] p[class]')
+
+        for z in range(len(all_text)):
+            if all_text[z] not in drop_text:
+                content += (all_text[z].text+"\n")
+
+        if content != "":
+            article_time = sub_soup.select('div[class="c_time"]')[0].text.strip()
 
     web_tag = ' '
-    # return ltn url content
-    return content, web_tag
 
+    # return ltn url content article_time
+    return content, web_tag, article_time
 
 def request_url(url):
    '''

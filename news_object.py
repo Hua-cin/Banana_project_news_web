@@ -52,7 +52,11 @@ class News:
         """
 
         # call content_function to request content
-        content, self.web_tag = func_content(self.url)
+        content, self.web_tag , article_time = func_content(self.url)
+
+        # update publish_time time after content confirm
+        if article_time != 0 :
+            self.publish_time = article_time
 
         # fetch base data, list have dict
         base = pd.read_csv(r'{}/ref_data/base.csv'.format(os.getcwd()))
@@ -114,6 +118,9 @@ class News:
             result = 0
         # print result and title
         print(self.title)
+        print(self.url)
+        print("**")
+        print("|{}|".format(content))
         print("-----------------")
 
         # return judgt result

@@ -13,6 +13,7 @@ import sys
 import pandas as pd
 import time
 import random
+import re
 
 def main():
    pass
@@ -29,11 +30,13 @@ def ltn_list():
    db_neswest_data = fetch_db_newest()
 
    # if news title contain exclude word, not to fetch
-   title_exclude_word = ['香蕉船', '香蕉哥哥', '香蕉新樂園', '香蕉伯', 'YOYO', 'yoyo', '正顎', '香蕉男', '香蕉」', '香蕉水', '旺仔', \
-              '想當香蕉', '流血', '硬', '黑蕉', '兒童界', '香蕉機', '香蕉槍', '香蕉球', 'GG']
+   # title_exclude_word = ['香蕉船', '香蕉哥哥', '香蕉新樂園', '香蕉伯', 'YOYO', 'yoyo', '正顎', '香蕉男', '香蕉」', '香蕉水', '旺仔', \
+   #            '想當香蕉', '流血', '硬', '黑蕉', '兒童界', '香蕉機', '香蕉槍', '香蕉球', 'GG', '罷韓']
+   title_exclude_word_path = "{}/ref_data/title_exclude_word.txt".format(os.getcwd())
+   title_exclude_word = load_file_to_list(title_exclude_word_path)
 
-   # if news tag contain exclude word, not to fetch
-   tag_exclude_word = ['娛樂']
+   # # if news tag contain exclude word, not to fetch
+   # tag_exclude_word = ['娛樂']
 
    # search page
    url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89"
@@ -103,11 +106,13 @@ def ltn_list():
             # store article data to row
             row['publish_time'] = publish_time
             row['title'] = title
+            if re.search('com.tw/m/', sub_url) != None:
+               sub_url = sub_url.replace
             row['url'] = sub_url
             row['web_class'] = web_class
 
             # call excude_in function and if meet the conditions, store to article_list
-            if not exclude_in(title, title_exclude_word) and sub_url != "":
+            if not exclude_in(title, title_exclude_word) and sub_url != "" :
               article_list.append(row)
 
       # data scan finish
@@ -279,6 +284,24 @@ def delay(x=1):
          # print("\rdelay {:>2d} 秒".format(t - y), end="")
          time.sleep(1)
    # print("\rrequest finish ")
+
+def load_file_to_list(path):
+   '''
+   load file for list item
+   :param path: file path
+   :return: data list
+   '''
+
+   with open(path, 'r', encoding='utf-8') as f:
+      temp = f.read()
+
+   text = temp.split('\n')
+   title_exclude_word = []
+
+   for i in text:
+      title_exclude_word.append(i)
+
+   return title_exclude_word
 
 if __name__ == "__main__":
    '''
