@@ -5,8 +5,9 @@ import time
 import random
 
 def main():
-    # content, web_tag, article_time = ltn_content("https://news.ltn.com.tw/news/business/paper/1378259")
-
+    content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
+    print(content)
+    print("123")
     pass
 
 def chinatimes_content(url):
