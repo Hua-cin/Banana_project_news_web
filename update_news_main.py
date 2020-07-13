@@ -9,7 +9,7 @@ from Banana_news_module import content_crawler
 if __name__ == '__main__':
 
     now = datetime.datetime.now()
-    print("{}, {}".format(now, "01.program start."))
+    print("\n{}, {}".format(now, "01.program start."))
 
     try:
         pass
