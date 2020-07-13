@@ -15,6 +15,10 @@ import time
 import random
 import re
 
+
+exec_file_path = '/home/lazyso/Autonews'
+exec_file_path = os.getcwd()
+
 def main():
    pass
 
@@ -23,16 +27,15 @@ def ltn_list():
    :return: compare_result, article_list
    '''
 
-   # check log folder exist or not
-   func_check_folder("log_folder")
+   # # check log folder exist or not
+   # func_check_folder("log_folder")
 
    # call fetch_db_newest function, fetch db newest data
    db_neswest_data = fetch_db_newest()
 
    # if news title contain exclude word, not to fetch
-   # title_exclude_word = ['香蕉船', '香蕉哥哥', '香蕉新樂園', '香蕉伯', 'YOYO', 'yoyo', '正顎', '香蕉男', '香蕉」', '香蕉水', '旺仔', \
-   #            '想當香蕉', '流血', '硬', '黑蕉', '兒童界', '香蕉機', '香蕉槍', '香蕉球', 'GG', '罷韓']
-   title_exclude_word_path = "{}/ref_data/title_exclude_word.txt".format(os.getcwd())
+
+   title_exclude_word_path = "{}/ref_data/title_exclude_word.txt".format(exec_file_path)
    title_exclude_word = load_file_to_list(title_exclude_word_path)
 
    # # if news tag contain exclude word, not to fetch
@@ -63,8 +66,8 @@ def ltn_list():
    article_list = []
 
    # scan search page
-   # for i in range(1, total_pages+1):
-   for i in range(1, 2):
+   for i in range(1, total_pages+1):
+   # for i in range(1, 2):
 
       # search page
       url = 'https://news.ltn.com.tw/topic/%E9%A6%99%E8%95%89/{}'.format(i)
@@ -114,7 +117,7 @@ def ltn_list():
 
             if (not exclude_in(title, title_exclude_word) and (not exclude_in(web_class, tag_exclude_word))) :
                article_list.append(row)
-               print(title)
+               # print(title)
 
       # data scan finish
       if article_compare_result == True:
@@ -123,38 +126,6 @@ def ltn_list():
    # return article_list and need update or not
    return article_list, update_or_not
 
-
-def func_check_folder(sub_keyword):
-   '''
-   confirm have log folder or not
-   :param sub_keyword: log folder name
-   '''
-
-   resource_path = r'{}/'.format(os.getcwd()) + sub_keyword
-
-   # confirm folder exist or not
-   if os.path.exists(resource_path):
-      pass
-   else:  # if no exist, make a new filder
-      os.mkdir(resource_path)
-
-   today = datetime.date.today()
-
-   # write a space to log file
-   print(" ", file=open("{}/log_folder/log_{}.txt".format(os.getcwd(),today), "a"))
-
-def write_log(log):
-   '''
-   write log to log file
-   :param log: log message
-   '''
-
-   now = datetime.datetime.now()
-   today = datetime.date.today()
-
-   # Standard output to log file
-   print("{}, {}".format(now, log), file=open("{}/log_folder/log_{}.txt".format(os.getcwd(),today), "a"))
-
 def fetch_db_newest():
    '''
    fetch db the newest data for data confirm
@@ -162,7 +133,7 @@ def fetch_db_newest():
    '''
 
    # fetch key_word
-   key_word = pd.read_csv(r'{}/ref_data/key_word.csv'.format(os.getcwd()))
+   key_word = pd.read_csv(r'{}/ref_data/key_word.csv'.format(exec_file_path))
 
    try:
       # connect database
@@ -179,9 +150,8 @@ def fetch_db_newest():
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 
    except Exception as err:
-      msg = "01.Unable to fetch data from db. Program stop!! {}".format(err)
-      write_log(msg)
-      print(err)
+      now = datetime.datetime.now()
+      print("{}, {}, {}".format(now, "51.Unable to fetch data from db. STOP!", err))
       sys.exit(0)
 
    db.close()
@@ -228,27 +198,26 @@ def request_url(url):
          res = requests.get(url, headers=headers)
 
    except Exception as err:
-      msg = "02.Unable to request data from web. {}".format(err)
-      write_log(msg)
-      print(err)
+      now = datetime.datetime.now()
+      print("{}, {}, {}".format(now, "52.Unable to request data from web.", err))
 
       # if first requset error, delay 180 second
       t = 180
       time.sleep(t)
 
       if proxy != '':
-         print("proxy = True")
+         # print("proxy = True")
          res = requests.get(url, headers=headers, proxies=proxies)
       else:
          res = requests.get(url, headers=headers)
 
-      msg = "03.Request data normal, continue program."
-      write_log("{}".format(msg))  # ~~~~~
+      now = datetime.datetime.now()
+      print("{}, {}".format(now, "53.Request data normal, continue program."))
 
    except:
       # if request second error, program stop
-      msg = "04.Unable to request data again, stop program.\n"
-      write_log("{}".format(msg))  # ~~~~~
+      now = datetime.datetime.now()
+      print("{}, {}".format(now, "54.Unable to request data again. STOP!"))
       sys.exit(0)
 
    # if request normal, return request

@@ -8,7 +8,10 @@ import os
 import jieba
 import pandas as pd
 from sklearn import cluster
-# from banana_project_news_web import content_crawler
+
+
+exec_file_path = '/home/lazyso/Autonews'
+exec_file_path = os.getcwd()
 
 class News:
     """
@@ -59,7 +62,7 @@ class News:
             self.publish_time = article_time
 
         # fetch base data, list have dict
-        base = pd.read_csv(r'{}/ref_data/base.csv'.format(os.getcwd()))
+        base = pd.read_csv(r'{}/ref_data/base.csv'.format(exec_file_path))
         base_dict_list = base.to_dict('records')
 
         # call jieba function, and get wordcut dict
@@ -156,7 +159,9 @@ class News:
         except Exception as err:
             # close db connect
             db.close()
-            print(err)
+            now = datetime.datetime.now()
+            print("{}, {}, {}".format(now, "11.upload to db abnormal. STOP!", err))
+            sys.exit(0)
 
 def main():
     pass
@@ -185,33 +190,32 @@ def request_url(url):
    # request a request
    try:
       if proxy != '':
-         print("proxy = True")
+         # print("proxy = True")
          res = requests.get(url, headers=headers, proxies=proxies)
       else:
          res = requests.get(url, headers=headers)
 
    except Exception as err:
-      msg = "02.Unable to request data from web. {}".format(err)
-      write_log(msg)
-      print(err)
+      now = datetime.datetime.now()
+      print("{}, {}, {}".format(now, "12.Unable to request data from web.", err))
 
       # if first requset error, delay 180 second
       t = 180
       time.sleep(t)
 
       if proxy != '':
-         print("proxy = True")
+         # print("proxy = True")
          res = requests.get(url, headers=headers, proxies=proxies)
       else:
          res = requests.get(url, headers=headers)
 
-      msg = "03.Request data normal, continue program."
-      write_log("{}".format(msg))  # ~~~~~
+      now = datetime.datetime.now()
+      print("{}, {}".format(now, "13.Request data normal, continue program."))
 
    except:
       # if request second error, program stop
-      msg = "04.Unable to request data again, stop program.\n"
-      write_log("{}".format(msg))  # ~~~~~
+      now = datetime.datetime.now()
+      print("{}, {}".format(now, "14.Unable to request data again. STOP!"))
       sys.exit(0)
 
    # if request normal, return request
@@ -221,7 +225,7 @@ def connect_db():
     """connect database"""
 
     # fetch key_word
-    key_word = pd.read_csv(r'{}/ref_data/key_word.csv'.format(os.getcwd()))
+    key_word = pd.read_csv(r'{}/ref_data/key_word.csv'.format(exec_file_path))
 
     db = MySQLdb.connect(host=str(key_word.loc[0, 'host']),
                          user=str(key_word.loc[0, 'user']),
@@ -238,14 +242,14 @@ def func_jieba(text):
     '''
 
     # fetch stop word list
-    stopword_path = r'./ref_data/stopword.txt'
+    stopword_path = r'{}/ref_data/stopword.txt'.format(exec_file_path)
     stopword_list = []
     with open(stopword_path, 'r', encoding='utf-8') as f_stop:
         for temp in f_stop.readlines():
             stopword_list.append(temp.replace('\n', ''))
 
     # fetch mydict list
-    jieba.load_userdict(r'./ref_data/mydict.txt')
+    jieba.load_userdict(r'{}/ref_data/mydict.txt'.format(exec_file_path))
     s = jieba.cut(text)
     jieba_word_count = {}
     for i in s:
@@ -290,3 +294,4 @@ if __name__ == "__main__":
     main function
     """
     main()
+

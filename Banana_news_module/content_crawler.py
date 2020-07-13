@@ -3,11 +3,10 @@ import requests
 import sys
 import time
 import random
+import datetime
 
 def main():
-    content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
-    print(content)
-    print("123")
+    # content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
     pass
 
 def chinatimes_content(url):
@@ -168,27 +167,23 @@ def request_url(url):
          res = requests.get(url, headers=headers)
 
    except Exception as err:
-      msg = "02.Unable to request data from web. {}".format(err)
-      write_log(msg)
-      print(err)
+      now = datetime.datetime.now()
+      print("{}, {}, {}".format(now, "21.Unable to request data from web.", err))
 
       # if first requset error, delay 180 second
       t = 180
       time.sleep(t)
 
       if proxy != '':
-         print("proxy = True")
+         # print("proxy = True")
          res = requests.get(url, headers=headers, proxies=proxies)
       else:
          res = requests.get(url, headers=headers)
 
-      msg = "03.Request data normal, continue program."
-      write_log("{}".format(msg))  # ~~~~~
-
    except:
       # if request second error, program stop
-      msg = "04.Unable to request data again, stop program.\n"
-      write_log("{}".format(msg))  # ~~~~~
+      now = datetime.datetime.now()
+      print("{}, {}".format(now, "22.Unable to request data again. STOP!"))
       sys.exit(0)
 
    # if request normal, return request
@@ -209,7 +204,6 @@ def delay(x=1):
       if y < t:
          # print("\rdelay {:>2d} 秒".format(t - y), end="")
          time.sleep(1)
-   # print("\rrequest finish ")
 
 if __name__ == "__main__":
     main()
