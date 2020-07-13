@@ -1,8 +1,8 @@
-from banana_project_news_web import chinatimes_list_crawler
-from banana_project_news_web import ltn_list_crawler
-from banana_project_news_web import ltn_list_crawler_for_tag
-from banana_project_news_web import news_object
-from banana_project_news_web import content_crawler
+from Banana_news_module import chinatimes_list_crawler
+from Banana_news_module import ltn_list_crawler
+from Banana_news_module import ltn_list_crawler_for_tag
+from Banana_news_module import news_object
+from Banana_news_module import content_crawler
 
 if __name__ == '__main__':
 
