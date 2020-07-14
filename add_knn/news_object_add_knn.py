@@ -135,8 +135,7 @@ class News:
         print("-----------------")
 
         # return judgt result
-        return result, content_exist,
-
+        return result, content_exist
 
 
     # def class_function(self):
