@@ -144,8 +144,8 @@ def fetch_db_newest():
                            port = int(key_word.loc[0, "port"]),
                            charset=str(key_word.loc[0, "charset"]))
 
-      sql_str = 'SELECT * FROM fruveg.Daniel_news_test ' \
-                'where web_name = "ltn"  ' \
+      sql_str = 'SELECT * FROM fruveg.Daniel_news ' \
+                'where web_name = "自由時報"  ' \
                 'order by publish_time DESC limit 1;'
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 

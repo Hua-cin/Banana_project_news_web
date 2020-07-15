@@ -41,6 +41,7 @@ def ltn_list():
 
    # search page
    url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89"
+   url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&conditions=and&start_time=2019-08-12&end_time=2019-10-12&page=1"
 
    # call request url function
    res = request_url(url)
@@ -68,6 +69,7 @@ def ltn_list():
 
       # search page
       url = 'https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&page={}'.format(i)
+      url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&conditions=and&start_time=2019-08-12&end_time=2019-10-12&page={}".format(i)
 
       # call request url function
       res = request_url(url)
@@ -141,8 +143,8 @@ def fetch_db_newest():
                            port = int(key_word.loc[0, "port"]),
                            charset=str(key_word.loc[0, "charset"]))
 
-      sql_str = 'SELECT * FROM fruveg.Daniel_news_test ' \
-                'where web_name = "ltn"  ' \
+      sql_str = 'SELECT * FROM fruveg.Daniel_news ' \
+                'where web_name = "自由時報"  ' \
                 'order by publish_time DESC limit 1;'
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 

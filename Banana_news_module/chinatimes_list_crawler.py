@@ -20,7 +20,7 @@ exec_file_path = os.getcwd()
 def main():
    pass
 
-def ltn_list():
+def chinatimes_list():
    '''
    :return: compare_result, article_list
    '''
@@ -131,8 +131,8 @@ def fetch_db_newest():
                            port = int(key_word.loc[0, "port"]),
                            charset=str(key_word.loc[0, "charset"]))
 
-      sql_str = 'SELECT * FROM fruveg.Daniel_news_test ' \
-                'where web_name = "chinatimes"  ' \
+      sql_str = 'SELECT * FROM fruveg.Daniel_news ' \
+                'where web_name = "中國時報"  ' \
                 'order by publish_time DESC limit 1;'
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 
