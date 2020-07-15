@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import sys
 import datetime
 from Banana_news_module import chinatimes_list_crawler
@@ -13,25 +16,25 @@ if __name__ == '__main__':
 
     try:
         pass
-        # # update chinatimes news-------------------------------------------------------------------------------------------
-        # # return article list and judge need update or not result
-        # chinatimes_article_list, chinatimes_need_update = chinatimes_list_crawler.chinatimes_list()
-        # # print(chinatimes_article_list)
-        #
-        # # if need, update chinatimes
-        # if chinatimes_need_update:
-        #     for i in range(len(chinatimes_article_list)):
-        #         reg_news = news_object.News()
-        #         reg_news.allocation('中國時報', chinatimes_article_list[len(chinatimes_article_list)-1-i])
-        #         reg_news.related, content_exist = reg_news.related_or_not(content_crawler.chinatimes_content)
-        #         if content_exist:
-        #             reg_news.upload_to_db()
-        #
-        #     now = datetime.datetime.now()
-        #     print("{}, {}".format(now, "02.chinatimes update finish."))
-        # else:
-        #     now = datetime.datetime.now()
-        #     print("{}, {}".format(now, "03.chinatimes no need update."))
+        # update chinatimes news-------------------------------------------------------------------------------------------
+        # return article list and judge need update or not result
+        chinatimes_article_list, chinatimes_need_update = chinatimes_list_crawler.chinatimes_list()
+        # print(chinatimes_article_list)
+
+        # if need, update chinatimes
+        if chinatimes_need_update:
+            for i in range(len(chinatimes_article_list)):
+                reg_news = news_object.News()
+                reg_news.allocation('中國時報', chinatimes_article_list[len(chinatimes_article_list)-1-i])
+                reg_news.related, content_exist = reg_news.related_or_not(content_crawler.chinatimes_content)
+                if content_exist:
+                    reg_news.upload_to_db()
+
+            now = datetime.datetime.now()
+            print("{}, {}".format(now, "02.chinatimes update finish."))
+        else:
+            now = datetime.datetime.now()
+            print("{}, {}".format(now, "03.chinatimes no need update."))
 
         # # update ltn news-------------------------------------------------------------------------------------------------
         ltn_for_tag = False
