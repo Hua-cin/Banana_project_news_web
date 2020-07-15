@@ -1,4 +1,0 @@
- 
-2020-07-13 10:57:27.663810, 01.Unable to fetch data from db. Program stop!! (2003, "Can't connect to MySQL server on '127.0.0.1' (111)")
- 
- 

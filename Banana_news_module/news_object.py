@@ -364,7 +364,7 @@ def load_news_data():
     for news in news_data:
         training_set_class[news['title']] = news['category']
         # 保存每篇文章詞彙出現次數
-        jieba.analyse.set_stop_words('./ref_data/stopword.txt')
+        jieba.analyse.set_stop_words('{}/ref_data/stopword.txt'.format(exec_file_path))
         seg_list = jieba.analyse.extract_tags(news['content'], topK=100)
 
         seg_content = {}
@@ -399,7 +399,7 @@ def get_article_vector(content, seg_corpus):
     """
 
     seg_content = {}
-    jieba.analyse.set_stop_words('./ref_data/stopword.txt')
+    jieba.analyse.set_stop_words('{}/ref_data/stopword.txt'.format(exec_file_path))
     seg_list = jieba.analyse.extract_tags(content, topK = 100)
     for seg in seg_list:
         if seg in seg_content:
