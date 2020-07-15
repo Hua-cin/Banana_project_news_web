@@ -41,7 +41,7 @@ def ltn_list():
 
    # search page
    url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89"
-   url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&conditions=and&start_time=2019-08-12&end_time=2019-10-12&page=1"
+   url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&conditions=and&start_time=2020-04-09&end_time=2020-07-09&page=1"
 
    # call request url function
    res = request_url(url)
@@ -69,7 +69,7 @@ def ltn_list():
 
       # search page
       url = 'https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&page={}'.format(i)
-      url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&conditions=and&start_time=2019-08-12&end_time=2019-10-12&page={}".format(i)
+      url = "https://news.ltn.com.tw/search?keyword=%E9%A6%99%E8%95%89&conditions=and&start_time=2020-04-09&end_time=2020-07-09&page={}".format(i)
 
       # call request url function
       res = request_url(url)

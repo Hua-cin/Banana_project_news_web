@@ -162,7 +162,7 @@ class News:
             # setup autocommit false
             db.autocommit(False)
             now = datetime.datetime.now()
-            sql_str = 'insert into Daniel_news_test (web_name, publish_time, web_class, title, url, related, output_class, web_tag, log_dt) ' \
+            sql_str = 'insert into Daniel_news (web_name, publish_time, web_class, title, url, related, output_class, web_tag, log_dt) ' \
                       'values(\'{}\', \'{}\', \'{}\', \'{}\', \'{}\',\'{}\', \'{}\', \'{}\', \'{}\');' \
                 .format(self.web_name, self.publish_time, self.web_class, self.title, self.url, self.related, self.output_class, self.web_tag, now)
 

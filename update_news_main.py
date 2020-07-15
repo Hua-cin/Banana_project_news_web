@@ -13,50 +13,50 @@ if __name__ == '__main__':
 
     try:
         pass
-        # update chinatimes news-------------------------------------------------------------------------------------------
-        # return article list and judge need update or not result
-        chinatimes_article_list, chinatimes_need_update = chinatimes_list_crawler.chinatimes_list()
-        # print(chinatimes_article_list)
-
-        # if need, update chinatimes
-        if chinatimes_need_update:
-            for i in range(len(chinatimes_article_list)):
-                reg_news = news_object.News()
-                reg_news.allocation('中國時報', chinatimes_article_list[len(chinatimes_article_list)-1-i])
-                reg_news.related, content_exist = reg_news.related_or_not(content_crawler.chinatimes_content)
-                if content_exist:
-                    reg_news.upload_to_db()
-
-            now = datetime.datetime.now()
-            print("{}, {}".format(now, "02.chinatimes update finish."))
-        else:
-            now = datetime.datetime.now()
-            print("{}, {}".format(now, "03.chinatimes no need update."))
-
-        # # # update ltn news-------------------------------------------------------------------------------------------------
-        # ltn_for_tag = False
-        #
+        # # update chinatimes news-------------------------------------------------------------------------------------------
         # # return article list and judge need update or not result
-        # # choice which type webpage for ltn web
-        # if ltn_for_tag: # for have tag web
-        #     ltn_article_list, ltn_need_update = ltn_list_crawler_for_tag.ltn_list()
-        # else:
-        #     ltn_article_list, ltn_need_update = ltn_list_crawler.ltn_list()
+        # chinatimes_article_list, chinatimes_need_update = chinatimes_list_crawler.chinatimes_list()
+        # # print(chinatimes_article_list)
         #
-        # # if need, update ltn
-        # if ltn_need_update:
-        #     for i in range(len(ltn_article_list)):
+        # # if need, update chinatimes
+        # if chinatimes_need_update:
+        #     for i in range(len(chinatimes_article_list)):
         #         reg_news = news_object.News()
-        #         reg_news.allocation('自由時報', ltn_article_list[len(ltn_article_list)-1-i])
-        #         reg_news.related, content_exist = reg_news.related_or_not(content_crawler.ltn_content)
+        #         reg_news.allocation('中國時報', chinatimes_article_list[len(chinatimes_article_list)-1-i])
+        #         reg_news.related, content_exist = reg_news.related_or_not(content_crawler.chinatimes_content)
         #         if content_exist:
         #             reg_news.upload_to_db()
         #
         #     now = datetime.datetime.now()
-        #     print("{}, {}".format(now, "04.ltn update finish."))
+        #     print("{}, {}".format(now, "02.chinatimes update finish."))
         # else:
         #     now = datetime.datetime.now()
-        #     print("{}, {}".format(now, "05.ltn no need update."))
+        #     print("{}, {}".format(now, "03.chinatimes no need update."))
+
+        # # update ltn news-------------------------------------------------------------------------------------------------
+        ltn_for_tag = False
+
+        # return article list and judge need update or not result
+        # choice which type webpage for ltn web
+        if ltn_for_tag: # for have tag web
+            ltn_article_list, ltn_need_update = ltn_list_crawler_for_tag.ltn_list()
+        else:
+            ltn_article_list, ltn_need_update = ltn_list_crawler.ltn_list()
+
+        # if need, update ltn
+        if ltn_need_update:
+            for i in range(len(ltn_article_list)):
+                reg_news = news_object.News()
+                reg_news.allocation('自由時報', ltn_article_list[len(ltn_article_list)-1-i])
+                reg_news.related, content_exist = reg_news.related_or_not(content_crawler.ltn_content)
+                if content_exist:
+                    reg_news.upload_to_db()
+
+            now = datetime.datetime.now()
+            print("{}, {}".format(now, "04.ltn update finish."))
+        else:
+            now = datetime.datetime.now()
+            print("{}, {}".format(now, "05.ltn no need update."))
 
 
     except Exception as err:
