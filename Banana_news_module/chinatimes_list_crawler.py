@@ -94,6 +94,7 @@ def chinatimes_list():
          row = {}
 
          # store article data to row
+         row['web_name'] = '中國時報'
          row['publish_time'] = publish_time
          row['web_class'] = web_class
          row['title'] = title

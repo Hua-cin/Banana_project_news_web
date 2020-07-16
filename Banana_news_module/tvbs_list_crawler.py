@@ -23,6 +23,7 @@ exec_file_path = '/home/daniel/anaconda3/envs/news/banana_project_news_web' # fo
 
 
 def main():
+   print(tvbs_list())
    pass
 
 def tvbs_list():
@@ -94,6 +95,7 @@ def tvbs_list():
          row = {}
 
          # store article data to row
+         row['web_name'] = 'TVBS'
          row['publish_time'] = publish_time
          row['web_class'] = web_class
          row['title'] = title

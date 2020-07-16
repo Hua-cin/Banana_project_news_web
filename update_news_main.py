@@ -4,6 +4,7 @@
 import sys
 import datetime
 from Banana_news_module import chinatimes_list_crawler
+from Banana_news_module import tvbs_list_crawler
 from Banana_news_module import ltn_list_crawler
 from Banana_news_module import ltn_list_crawler_for_tag
 from Banana_news_module import news_object
@@ -65,10 +66,31 @@ if __name__ == '__main__':
             now = datetime.datetime.now()
             print("{}, {}".format(now, "05.ltn no need update."))
 
+        # update tvbs news-------------------------------------------------------------------------------------------
+        # return article list
+        tvbs_article_list = tvbs_list_crawler.tvbs_list()
+        print(tvbs_article_list)
+
+        # if need, update chinatimes
+        if len(tvbs_article_list)>0:
+            for i in range(len(tvbs_article_list)):
+                reg_news = news_object.News()
+                reg_news.allocation('TVBS', tvbs_article_list[len(tvbs_article_list)-1-i])
+                reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.tvbs_content)
+                reg_news.knn_class()
+
+                if content_exist:
+                    reg_news.upload_to_db()
+
+            now = datetime.datetime.now()
+            print("{}, {}".format(now, "06.tvbs update finish."))
+        else:
+            now = datetime.datetime.now()
+            print("{}, {}".format(now, "07.tvbs no need update."))
 
     except Exception as err:
         now = datetime.datetime.now()
-        print("{}, {}, {}".format(now, "06.prgoram abnormal. STOP!", err))
+        print("{}, {}, {}".format(now, "08.prgoram abnormal. STOP!", err))
         sys.exit(0)
 
 

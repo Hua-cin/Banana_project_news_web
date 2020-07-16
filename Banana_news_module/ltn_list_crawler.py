@@ -104,6 +104,7 @@ def ltn_list():
             row = {}
 
             # store article data to row
+            row['web_name'] = '自由時報'
             row['publish_time'] = publish_time
             row['title'] = title
             if re.search('com.tw/m/', sub_url) != None:

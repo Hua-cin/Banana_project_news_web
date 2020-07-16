@@ -106,6 +106,7 @@ def ltn_list():
             title = j.select('a[class="tit"]')[0].text
             sub_url = j.select('a[class="tit"]')[0]['href']
 
+            row['web_name'] = '自由時報'
             row['publish_time'] = publish_time
             row['web_class']= web_class
             row['title']= title

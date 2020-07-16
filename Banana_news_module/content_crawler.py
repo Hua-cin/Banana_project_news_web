@@ -7,9 +7,11 @@ import sys
 import time
 import random
 import datetime
+import re
 
 def main():
     # content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
+    # tvbs_content("https://news.tvbs.com.tw/news/search_check/news/1340105")
     pass
 
 def chinatimes_content(url):
@@ -139,6 +141,38 @@ def ltn_content(url):
 
     # return ltn url content article_time
     return content, web_tag, article_time, content_exist
+
+def tvbs_content(url):
+    '''
+
+    :param url: want requent url
+    :return: chinatimes url content
+    '''
+
+    # call request url function
+    res = request_url(url)
+    sub_soup = BeautifulSoup(res.text, 'html.parser')
+    all_text = sub_soup.text
+
+    # capture content
+    content = re.sub(r'\n+\s+', "\n", str(all_text.split("小\n中\n大\n")[1].split("更新時間")[0])).strip()
+
+    article_time = sub_soup.select('div[class ="icon_time time leftBox2"]')[0].text.replace("/","-")
+
+    # capture tag
+    reg_tag = sub_soup.select('div[class="adWords"] a')
+    web_tag = sub_soup.select('div[class="adWords"] a')[0].text
+    for i in range(1, len(reg_tag)):
+        web_tag += (';'+reg_tag[i].text)
+
+    if content == '':
+        content_exist = False
+    else:
+        content_exist = True
+
+    # return chinatimes url content
+    return content, web_tag, article_time, content_exist
+
 
 def request_url(url):
    '''
