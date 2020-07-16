@@ -26,7 +26,7 @@ def main():
    # print(tvbs_list())
    pass
 
-def tvbs_list():
+def article_list():
    '''
    :return: compare_result, article_list
    '''
@@ -47,13 +47,13 @@ def tvbs_list():
    # call request url function
    res = request_url(url)
 
-   # use beautifulsoup
-   soup = BeautifulSoup(res.text, 'html.parser')
+   # # use beautifulsoup
+   # soup = BeautifulSoup(res.text, 'html.parser')
 
    # capture total pages
    total_pages = 5
 
-   print("total pages : {:>3}".format(total_pages))
+   # print("total pages : {:>3}".format(total_pages))
 
    # init article_compare_result, default False
    article_compare_result = False

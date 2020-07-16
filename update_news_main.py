@@ -4,11 +4,41 @@
 import sys
 import datetime
 from Banana_news_module import chinatimes_list_crawler
+from Banana_news_module import ettoday_list_crawler
 from Banana_news_module import tvbs_list_crawler
 from Banana_news_module import ltn_list_crawler
 from Banana_news_module import ltn_list_crawler_for_tag
 from Banana_news_module import news_object
 from Banana_news_module import content_crawler
+
+
+def list_to_result(article_list):
+    # if need, update chinatimes
+
+    for i in range(len(article_list)):
+        reg_news = news_object.News()
+        reg_news.allocation(article_list[len(article_list) - 1 - i])
+
+        if article_list[0]['web_name'] == "ETtoday新聞雲":
+            reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.ettoday_content)
+
+        elif article_list[0]['web_name'] == "TVBS新聞網":
+            reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.tvbs_content)
+
+        elif article_list[0]['web_name'] == "中時電子報":
+            reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.chinatimes_content)
+
+        elif article_list[0]['web_name'] == "自由時報":
+            reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.ltn_content)
+
+        reg_news.knn_class()
+
+        if content_exist:
+            reg_news.upload_to_db()
+
+    now = datetime.datetime.now()
+    print("{}, 09.{} update finish.".format(now, article_list[0]['web_name']))
+
 
 if __name__ == '__main__':
 
@@ -17,76 +47,52 @@ if __name__ == '__main__':
 
     try:
         pass
-        # update chinatimes news-------------------------------------------------------------------------------------------
-        # return article list
-        chinatimes_article_list = chinatimes_list_crawler.chinatimes_list()
-        # print(chinatimes_article_list)
 
-        # if need, update chinatimes
+        now = datetime.datetime.now()
+        print("{}, 01.{} start confirm..".format(now, '中時電子報'))
+
+        chinatimes_article_list = chinatimes_list_crawler.article_list()
         if len(chinatimes_article_list)>0:
-            for i in range(len(chinatimes_article_list)):
-                reg_news = news_object.News()
-                reg_news.allocation(chinatimes_article_list[len(chinatimes_article_list)-1-i])
-                reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.chinatimes_content)
-                reg_news.knn_class()
-
-                if content_exist:
-                    reg_news.upload_to_db()
-
-            now = datetime.datetime.now()
-            print("{}, {}".format(now, "02.chinatimes update finish."))
+            list_to_result(chinatimes_article_list)
         else:
             now = datetime.datetime.now()
-            print("{}, {}".format(now, "03.chinatimes no need update."))
+            print("{}, 02.{} no need update..".format(now, '中時電子報'))
 
-        # # update ltn news-------------------------------------------------------------------------------------------------
-        ltn_for_tag = False
+        print('\n')
 
-        # return article list
-        # choice which type webpage for ltn web
-        if ltn_for_tag: # for have tag web
-            ltn_article_list = ltn_list_crawler_for_tag.ltn_list()
-        else:
-            ltn_article_list = ltn_list_crawler.ltn_list()
+        now = datetime.datetime.now()
+        print("{}, 03.{} start confirm..".format(now, '自由時報'))
 
-        # if need, update ltn
+        ltn_article_list = ltn_list_crawler.article_list()
         if len(ltn_article_list)>0:
-            for i in range(len(ltn_article_list)):
-                reg_news = news_object.News()
-                reg_news.allocation(ltn_article_list[len(ltn_article_list)-1-i])
-                reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.ltn_content)
-                reg_news.knn_class()
-
-                if content_exist:
-                    reg_news.upload_to_db()
-
-            now = datetime.datetime.now()
-            print("{}, {}".format(now, "04.ltn update finish."))
+            list_to_result(ltn_article_list)
         else:
             now = datetime.datetime.now()
-            print("{}, {}".format(now, "05.ltn no need update."))
+            print("{}, 04.{} no need update..".format(now, '自由時報'))
 
-        # update tvbs news-------------------------------------------------------------------------------------------
-        # return article list
-        tvbs_article_list = tvbs_list_crawler.tvbs_list()
-        print(tvbs_article_list)
+        print('\n')
 
-        # if need, update chinatimes
+        now = datetime.datetime.now()
+        print("{}, 10.{} start confirm..".format(now, 'TVBS新聞網'))
+
+        tvbs_article_list = tvbs_list_crawler.article_list()
         if len(tvbs_article_list)>0:
-            for i in range(len(tvbs_article_list)):
-                reg_news = news_object.News()
-                reg_news.allocation(tvbs_article_list[len(tvbs_article_list)-1-i])
-                reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.tvbs_content)
-                reg_news.knn_class()
-
-                if content_exist:
-                    reg_news.upload_to_db()
-
-            now = datetime.datetime.now()
-            print("{}, {}".format(now, "06.tvbs update finish."))
+            list_to_result(tvbs_article_list)
         else:
             now = datetime.datetime.now()
-            print("{}, {}".format(now, "07.tvbs no need update."))
+            print("{}, 05.{} no need update..".format(now, 'TVBS新聞網'))
+
+        print('\n')
+
+        now = datetime.datetime.now()
+        print("{}, 06.{} start confirm..".format(now, 'ETtoday新聞雲'))
+
+        ettoday_article_list = ettoday_list_crawler.article_list()
+        if len(ettoday_article_list)>0:
+            list_to_result(ettoday_article_list)
+        else:
+            now = datetime.datetime.now()
+            print("{}, 07.{} no need update..".format(now, 'ETtoday新聞雲'))
 
     except Exception as err:
         now = datetime.datetime.now()

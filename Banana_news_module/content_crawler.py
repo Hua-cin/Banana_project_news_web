@@ -11,7 +11,7 @@ import re
 
 def main():
     # content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
-    # tvbs_content("https://news.tvbs.com.tw/news/search_check/news/1340105")
+    # print(ettoday_content("https://www.ettoday.net/news/20200714/1759881.htm"))
     pass
 
 def chinatimes_content(url):
@@ -172,6 +172,41 @@ def tvbs_content(url):
 
     # return chinatimes url content
     return content, web_tag, article_time, content_exist
+
+def ettoday_content(url):
+    '''
+
+    :param url: want requent url
+    :return: chinatimes url content
+    '''
+
+    # call request url function
+    res = request_url(url)
+    sub_soup = BeautifulSoup(res.text, 'html.parser')
+
+    # capture content
+    all_text = sub_soup.select('div[class="story"] p')
+    # print(all_text)
+
+    content = ""
+
+    for j in all_text:
+        content += j.text
+
+    article_time = datetime.datetime.strptime(sub_soup.select('time[class="date"]')[0]['datetime'].split('+')[0], "%Y-%m-%dT%H:%M:%S")
+
+
+    # capture tag
+    web_tag = ' '
+
+    if content == '':
+        content_exist = False
+    else:
+        content_exist = True
+
+    # return chinatimes url content
+    return content, web_tag, article_time, content_exist
+
 
 
 def request_url(url):

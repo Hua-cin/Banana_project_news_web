@@ -26,7 +26,7 @@ def main():
    print(ettoday_list())
    pass
 
-def ettoday_list():
+def article_list():
    '''
    :return: compare_result, article_list
    '''
@@ -42,7 +42,7 @@ def ettoday_list():
    # tag_exclude_word = ['娛樂']
    #
    # search page
-   url = 'https://www.ettoday.net/news_search/doSearch.php?keywords=%E9%A6%99%E8%95%89&idx=1&page={}'.format(1)
+   url = 'https://www.ettoday.net/news_search/doSearch.php?keywords=%E9%A6%99%E8%95%89&idx=2&page={}'.format(1)
 
    # call request url function
    res = request_url(url)
@@ -53,7 +53,7 @@ def ettoday_list():
    # capture total pages
    total_pages = 5
 
-   print("total pages : {:>3}".format(total_pages))
+   # print("total pages : {:>3}".format(total_pages))
 
    # init article_compare_result, default False
    article_compare_result = False
@@ -65,7 +65,7 @@ def ettoday_list():
    for i in range(1, total_pages+1):
 
       # search page
-      url = 'https://www.ettoday.net/news_search/doSearch.php?keywords=%E9%A6%99%E8%95%89&idx=1&page={}'.format(i)
+      url = 'https://www.ettoday.net/news_search/doSearch.php?keywords=%E9%A6%99%E8%95%89&idx=2&page={}'.format(i)
 
       # call request url function
       res = request_url(url)
@@ -75,7 +75,7 @@ def ettoday_list():
 
       # capture all text
       all_text = soup.select('div[class="box_2"]')
-      print(len(all_text))
+
       # # scan one page article
       for j in all_text:
          reg = j.select('span[class="date"]')[0].text

@@ -23,7 +23,7 @@ exec_file_path = os.getcwd()
 def main():
    pass
 
-def chinatimes_list():
+def article_list():
    '''
    :return: compare_result, article_list
    '''
