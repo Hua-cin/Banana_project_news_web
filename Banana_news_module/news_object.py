@@ -17,7 +17,7 @@ import os
 
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
-# exec_file_path = os.getcwd()
+exec_file_path = os.getcwd()
 
 class News:
     """
@@ -54,7 +54,7 @@ class News:
         self.title = row_dict['title']
         self.url = row_dict['url']
 
-    def related_or_not(self, func_content):
+    def kmeans_related(self, func_content):
         """
         method for confirm content related banana or not
         :param self:
@@ -116,39 +116,43 @@ class News:
         # judge the latest result
         if banana_times > 1:
             if cluster_labels[0] == cluster_labels[1]:
-                print("無相關")
+                # print("無相關")
                 result = 0
             elif cluster_labels[1] == cluster_labels[2]:
-                print("無相關")
+                # print("無相關")
                 result = 0
             else:
-                print("相關")
+                # print("相關")
                 result = 1
         else:
-            print("無相關")
+            # print("無相關")
             result = 0
 
-        trainset_tf, trainset_class, seg_corpus = load_news_data()
-        input_tf = get_article_vector(self.content, seg_corpus)
-        self.output_class = knn_classify(input_tf, trainset_tf, trainset_class, k=3)
-        print("class = {}".format(self.output_class))
+        # trainset_tf, trainset_class, seg_corpus = load_news_data()
+        # input_tf = get_article_vector(self.content, seg_corpus)
+        # self.output_class = knn_classify(input_tf, trainset_tf, trainset_class, k=3)
+        # print("class = {}".format(self.output_class))
 
         # print result and title
         print(self.title)
         print(self.url)
-        print("**")
-        print("|{}|".format(self.content))
+        print("|{}|\n".format(self.content))
+        if result == 1:
+            print("相關")
+        else:
+            print("無相關")
         print("-----------------")
 
         # return judgt result
         return result, content_exist
 
 
-    # def class_function(self):
-    #     trainset_tf, trainset_class, seg_corpus = load_news_data()
-    #     input_tf = get_article_vector(self.content, seg_corpus)
-    #     output_class = knn_classify(input_tf, trainset_tf, trainset_class, k=3)
-    #     return output_class
+    def knn_class(self):
+        trainset_tf, trainset_class, seg_corpus = load_news_data()
+        input_tf = get_article_vector(self.content, seg_corpus)
+        self.output_class = knn_classify(input_tf, trainset_tf, trainset_class, k=3)
+        print("class = {}".format(self.output_class))
+        print("------------------------------------------------------------------------------------------")
 
 
     def upload_to_db(self):
@@ -479,12 +483,12 @@ def knn_classify(input_tf, trainset_tf, trainset_class, k):
             input_class = c
         print('\t%s, %d' % (c, class_count.get(c)))
         l.append(c)
-    print('4.分類結果 = %s' % input_class)
+    # print('4.分類結果 = %s' % input_class)
 
     y = ''
     for x in l:
         y += x + " "
-    print(y.strip())
+    # print(y.strip())
 
     return y
 

@@ -26,7 +26,9 @@ if __name__ == '__main__':
             for i in range(len(chinatimes_article_list)):
                 reg_news = news_object.News()
                 reg_news.allocation('中國時報', chinatimes_article_list[len(chinatimes_article_list)-1-i])
-                reg_news.related, content_exist = reg_news.related_or_not(content_crawler.chinatimes_content)
+                reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.chinatimes_content)
+                reg_news.knn_class()
+
                 if content_exist:
                     reg_news.upload_to_db()
 
@@ -51,7 +53,9 @@ if __name__ == '__main__':
             for i in range(len(ltn_article_list)):
                 reg_news = news_object.News()
                 reg_news.allocation('自由時報', ltn_article_list[len(ltn_article_list)-1-i])
-                reg_news.related, content_exist = reg_news.related_or_not(content_crawler.ltn_content)
+                reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.ltn_content)
+                reg_news.knn_class()
+
                 if content_exist:
                     reg_news.upload_to_db()
 
