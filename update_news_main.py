@@ -17,12 +17,12 @@ if __name__ == '__main__':
     try:
         pass
         # update chinatimes news-------------------------------------------------------------------------------------------
-        # return article list and judge need update or not result
-        chinatimes_article_list, chinatimes_need_update = chinatimes_list_crawler.chinatimes_list()
+        # return article list
+        chinatimes_article_list = chinatimes_list_crawler.chinatimes_list()
         # print(chinatimes_article_list)
 
         # if need, update chinatimes
-        if chinatimes_need_update:
+        if len(chinatimes_article_list)>0:
             for i in range(len(chinatimes_article_list)):
                 reg_news = news_object.News()
                 reg_news.allocation('中國時報', chinatimes_article_list[len(chinatimes_article_list)-1-i])
@@ -41,15 +41,15 @@ if __name__ == '__main__':
         # # update ltn news-------------------------------------------------------------------------------------------------
         ltn_for_tag = False
 
-        # return article list and judge need update or not result
+        # return article list
         # choice which type webpage for ltn web
         if ltn_for_tag: # for have tag web
-            ltn_article_list, ltn_need_update = ltn_list_crawler_for_tag.ltn_list()
+            ltn_article_list = ltn_list_crawler_for_tag.ltn_list()
         else:
-            ltn_article_list, ltn_need_update = ltn_list_crawler.ltn_list()
+            ltn_article_list = ltn_list_crawler.ltn_list()
 
         # if need, update ltn
-        if ltn_need_update:
+        if len(ltn_article_list)>0:
             for i in range(len(ltn_article_list)):
                 reg_news = news_object.News()
                 reg_news.allocation('自由時報', ltn_article_list[len(ltn_article_list)-1-i])

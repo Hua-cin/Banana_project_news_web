@@ -56,14 +56,11 @@ def ltn_list():
    # print(soup)
 
    # capture total pages
-   pages = int(str(soup.select('div [class="p_last"]')).split('"')[-2].split('/')[-1])
+   total_pages = int(str(soup.select('div [class="p_last"]')).split('"')[-2].split('/')[-1])
    # print("搜尋結果共{:>3}頁".format(pages))
 
    # init article_compare_result, default False
    article_compare_result = False
-
-   # init update_or_not, default False
-   update_or_not = False
 
    # init article_list
    article_list = []
@@ -100,9 +97,6 @@ def ltn_list():
                article_compare_result = True
                break
 
-            # web have new data, need to update news page
-            update_or_not = True
-
             web_class = j.select_one('a[class="immtag"]').text
             if web_class == "":
                web_class = "其他"
@@ -127,7 +121,7 @@ def ltn_list():
          break
 
    # return article_list and need update or not
-   return article_list, update_or_not
+   return article_list
 
 def fetch_db_newest():
    '''

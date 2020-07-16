@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-get banana news, chinatimes list
+get banana news, tvbs list
 input : N/A
 output : article_list, update_or_not
 '''
@@ -19,20 +19,19 @@ import random
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
 exec_file_path = os.getcwd()
+exec_file_path = '/home/daniel/anaconda3/envs/news/banana_project_news_web' # for test
+
 
 def main():
    pass
 
-def chinatimes_list():
+def tvbs_list():
    '''
    :return: compare_result, article_list
    '''
 
-   # check log folder exist or not
-   # func_check_folder("log_folder")
-
    # call fetch_db_newest function, fetch db newest data
-   db_neswest_data = fetch_db_newest()
+   db_neswest_data = fetch_db_newest("tvbs")
 
    # if news title contain exclude word, not to fetch
    title_exclude_word_path = "{}/ref_data/title_exclude_word.txt".format(exec_file_path)
@@ -40,9 +39,9 @@ def chinatimes_list():
 
    # # if news tag contain exclude word, not to fetch
    # tag_exclude_word = ['娛樂']
-
+   #
    # search page
-   url = "https://www.chinatimes.com/Search/%E9%A6%99%E8%95%89?chdtv"
+   url = 'https://news.tvbs.com.tw/news/searchresult/news/{}/?search_text=香蕉'.format(1)
 
    # call request url function
    res = request_url(url)
@@ -51,14 +50,12 @@ def chinatimes_list():
    soup = BeautifulSoup(res.text, 'html.parser')
 
    # capture total pages
-   total_pages = int(str(soup.select('a[class="page-link"]')[-1]).split('page=')[1].split('">')[0])
-   # print("total pages : {:>3}".format(total_pages))
+   total_pages = 5
+
+   print("total pages : {:>3}".format(total_pages))
 
    # init article_compare_result, default False
    article_compare_result = False
-
-   # init update_or_not, default False
-   update_or_not = False
 
    # init article_list
    article_list = []
@@ -67,7 +64,7 @@ def chinatimes_list():
    for i in range(1, total_pages+1):
 
       # search page
-      url = 'https://www.chinatimes.com/Search/%E9%A6%99%E8%95%89?page={}&chdtv'.format(i)
+      url = 'https://news.tvbs.com.tw/news/searchresult/news/{}/?search_text=香蕉'.format(i)
 
       # call request url function
       res = request_url(url)
@@ -76,27 +73,24 @@ def chinatimes_list():
       soup = BeautifulSoup(res.text, 'html.parser')
 
       # capture all text
-      all_text = soup.select('div[class="col"]')
+      all_text = soup.select('div[class="search_list_div"] li')
 
-      # scan one page article
+      # # scan one page article
       for j in all_text:
 
          # compare web article publish time and db newest data publish time, data scan finish
-         if datetime.datetime.strptime(str(j.select('time')[0]).split('datetime="')[1].split('"><')[0], "%Y-%m-%d %H:%M") \
+         if datetime.datetime.strptime(j.select('div[class="icon_time"]')[0].text, "%Y/%m/%d %H:%M") \
                  <= db_neswest_data['publish_time']:
             article_compare_result = True
             break
 
-         # web have new data, need to update news page
-         update_or_not = True
-
          # capture article data
-         web_class = j.select('div [class="category"]')[0].text
-         title = j.select('h3')[0].text
-         publish_time = datetime.datetime.strptime(str(j.select('time')[0]).split('datetime="')[1].split('"><')[0], "%Y-%m-%d %H:%M")
-         sub_url = j.select('h3 a')[0]['href']
+         web_class = ' '
+         title = j.select('div[class="search_list_txt"]')[0].text.replace("\u3000", " ")
+         publish_time = datetime.datetime.strptime(j.select('div[class="icon_time"]')[0].text, "%Y/%m/%d %H:%M")
+         sub_url = j.select('a')[0]['href']
 
-         # init row data (for one article)
+         #init row data (for one article)
          row = {}
 
          # store article data to row
@@ -113,10 +107,10 @@ def chinatimes_list():
          break
 
    # return article_list and need update or not
-   return article_list, update_or_not
+   return article_list
 
 
-def fetch_db_newest():
+def fetch_db_newest(web):
    '''
    fetch db the newest data for data confirm
    :return: db_neswest_data
@@ -135,8 +129,8 @@ def fetch_db_newest():
                            charset=str(key_word.loc[0, "charset"]))
 
       sql_str = 'SELECT * FROM fruveg.Daniel_news ' \
-                'where web_name = "中國時報"  ' \
-                'order by publish_time DESC limit 1;'
+                'where web_name = "{}"  ' \
+                'order by publish_time DESC limit 1;'.format(web)
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 
    except Exception as err:
@@ -243,24 +237,6 @@ def delay(x=1):
       if y < t:
          # print("\rdelay {:>2d} 秒".format(t - y), end="")
          time.sleep(1)
-
-def load_file_to_list(path):
-   '''
-   load file for list item
-   :param path: file path
-   :return: data list
-   '''
-
-   with open(path, 'r', encoding='utf-8') as f:
-      temp = f.read()
-
-   text = temp.split('\n')
-   title_exclude_word = []
-
-   for i in text:
-      title_exclude_word.append(i)
-
-   return title_exclude_word
 
 if __name__ == "__main__":
    '''

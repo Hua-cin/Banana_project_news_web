@@ -57,9 +57,6 @@ def chinatimes_list():
    # init article_compare_result, default False
    article_compare_result = False
 
-   # init update_or_not, default False
-   update_or_not = False
-
    # init article_list
    article_list = []
 
@@ -87,9 +84,6 @@ def chinatimes_list():
             article_compare_result = True
             break
 
-         # web have new data, need to update news page
-         update_or_not = True
-
          # capture article data
          web_class = j.select('div [class="category"]')[0].text
          title = j.select('h3')[0].text
@@ -113,7 +107,7 @@ def chinatimes_list():
          break
 
    # return article_list and need update or not
-   return article_list, update_or_not
+   return article_list
 
 
 def fetch_db_newest():

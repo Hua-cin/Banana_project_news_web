@@ -61,9 +61,6 @@ def ltn_list():
    # init article_compare_result, default False
    article_compare_result = False
 
-   # init update_or_not, default False
-   update_or_not = False
-
    # init article_list
    article_list = []
 
@@ -97,9 +94,6 @@ def ltn_list():
               article_compare_result = True
               break
 
-            # web have new data, need to update news page
-            update_or_not = True
-
             # capture article data
             web_class = ' '
             title = j.select('a[class="tit"]')[0].text
@@ -126,7 +120,7 @@ def ltn_list():
          break
 
    # return article_list and need update or not
-   return article_list, update_or_not
+   return article_list
 
 def fetch_db_newest():
    '''
@@ -255,24 +249,6 @@ def delay(x=1):
       if y < t:
          # print("\rdelay {:>2d} 秒".format(t - y), end="")
          time.sleep(1)
-
-def load_file_to_list(path):
-   '''
-   load file for list item
-   :param path: file path
-   :return: data list
-   '''
-
-   with open(path, 'r', encoding='utf-8') as f:
-      temp = f.read()
-
-   text = temp.split('\n')
-   title_exclude_word = []
-
-   for i in text:
-      title_exclude_word.append(i)
-
-   return title_exclude_word
 
 if __name__ == "__main__":
    '''
