@@ -39,7 +39,7 @@ class News:
         self.output_class = ''
         self.content = ''
 
-    def allocation(self, web, row_dict):
+    def allocation(self, row_dict):
         """
         method for allocation recipe to object
         :param self:
@@ -48,7 +48,7 @@ class News:
         :return: N/A
         """
 
-        self.web_name = web
+        self.web_name = row_dict['web_name']
         self.web_class = row_dict['web_class']
         self.publish_time = row_dict['publish_time']
         self.title = row_dict['title']

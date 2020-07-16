@@ -23,16 +23,16 @@ exec_file_path = '/home/daniel/anaconda3/envs/news/banana_project_news_web' # fo
 
 
 def main():
-   # print(tvbs_list())
+   print(ettoday_list())
    pass
 
-def tvbs_list():
+def ettoday_list():
    '''
    :return: compare_result, article_list
    '''
 
    # call fetch_db_newest function, fetch db newest data
-   db_neswest_data = fetch_db_newest("TVBS新聞網")
+   db_neswest_data = fetch_db_newest("ETtoday新聞雲")
 
    # if news title contain exclude word, not to fetch
    title_exclude_word_path = "{}/ref_data/title_exclude_word.txt".format(exec_file_path)
@@ -42,7 +42,7 @@ def tvbs_list():
    # tag_exclude_word = ['娛樂']
    #
    # search page
-   url = 'https://news.tvbs.com.tw/news/searchresult/news/{}/?search_text=香蕉'.format(1)
+   url = 'https://www.ettoday.net/news_search/doSearch.php?keywords=%E9%A6%99%E8%95%89&idx=1&page={}'.format(1)
 
    # call request url function
    res = request_url(url)
@@ -65,7 +65,7 @@ def tvbs_list():
    for i in range(1, total_pages+1):
 
       # search page
-      url = 'https://news.tvbs.com.tw/news/searchresult/news/{}/?search_text=香蕉'.format(i)
+      url = 'https://www.ettoday.net/news_search/doSearch.php?keywords=%E9%A6%99%E8%95%89&idx=1&page={}'.format(i)
 
       # call request url function
       res = request_url(url)
@@ -74,28 +74,34 @@ def tvbs_list():
       soup = BeautifulSoup(res.text, 'html.parser')
 
       # capture all text
-      all_text = soup.select('div[class="search_list_div"] li')
-
+      all_text = soup.select('div[class="box_2"]')
+      print(len(all_text))
       # # scan one page article
       for j in all_text:
+         reg = j.select('span[class="date"]')[0].text
+         string = ''
+
+         for i in reg[1:-1]:
+            string += i
+
+         publish_time = datetime.datetime.strptime(string.split(' / ')[1], "%Y-%m-%d %H:%M")
 
          # compare web article publish time and db newest data publish time, data scan finish
-         if datetime.datetime.strptime(j.select('div[class="icon_time"]')[0].text, "%Y/%m/%d %H:%M") \
-                 <= db_neswest_data['publish_time']:
+         if publish_time <= db_neswest_data['publish_time']:
             article_compare_result = True
             break
 
          # capture article data
-         web_class = ' '
-         title = j.select('div[class="search_list_txt"]')[0].text.replace("\u3000", " ")
-         publish_time = datetime.datetime.strptime(j.select('div[class="icon_time"]')[0].text, "%Y/%m/%d %H:%M")
+         web_class = string.split(' / ')[0]
+         title = j.select('a')[0].text.replace('\u3000', ' ')
+
          sub_url = j.select('a')[0]['href']
 
          #init row data (for one article)
          row = {}
 
          # store article data to row
-         row['web_name'] = 'TVBS新聞網'
+         row['web_name'] = 'ETtoday新聞雲'
          row['publish_time'] = publish_time
          row['web_class'] = web_class
          row['title'] = title

@@ -94,7 +94,7 @@ def chinatimes_list():
          row = {}
 
          # store article data to row
-         row['web_name'] = '中國時報'
+         row['web_name'] = '中時電子報'
          row['publish_time'] = publish_time
          row['web_class'] = web_class
          row['title'] = title
@@ -130,7 +130,7 @@ def fetch_db_newest():
                            charset=str(key_word.loc[0, "charset"]))
 
       sql_str = 'SELECT * FROM fruveg.Daniel_news ' \
-                'where web_name = "中國時報"  ' \
+                'where web_name = "中時電子報"  ' \
                 'order by publish_time DESC limit 1;'
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 
