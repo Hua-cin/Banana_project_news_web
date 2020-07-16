@@ -8,11 +8,24 @@ import time
 import random
 import datetime
 import re
+import os
+
 
 def main():
     # content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
     # print(ettoday_content("https://www.ettoday.net/news/20200714/1759881.htm"))
     pass
+
+def func_out_file(name, content):
+
+    resource_path = r'./print_file'
+    if os.path.exists(resource_path) :  # 檢查目錄是否存在, 如已存在則強制刪除目錄並再次建立目錄
+        time.sleep(0.1) # delay 秒, 避免目錄存取錯誤
+    else :  # 目錄不存在, 則建立新目錄
+        os.mkdir(resource_path)
+
+    with open(r'{}/{}.txt'.format(resource_path, name), 'w', encoding='utf-8') as w:
+        w.write(content)
 
 def chinatimes_content(url):
     '''

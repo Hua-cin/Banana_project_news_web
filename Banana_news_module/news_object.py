@@ -182,6 +182,10 @@ class News:
             # close db connect
             db.close()
 
+            # # print out file
+            # name = '{} {} {}'.format(self.web_name,self.publish_time.split(' ')[0], self.title)
+            # func_out_file(name, self.content)
+
         except Exception as err:
             # close db connect
             db.close()
@@ -491,6 +495,17 @@ def knn_classify(input_tf, trainset_tf, trainset_class, k):
     # print(y.strip())
 
     return y
+
+def func_out_file(name, content):
+
+    resource_path = r'./print_file'
+    if os.path.exists(resource_path) :  # 檢查目錄是否存在, 如已存在則強制刪除目錄並再次建立目錄
+        time.sleep(0.1) # delay 秒, 避免目錄存取錯誤
+    else :  # 目錄不存在, 則建立新目錄
+        os.mkdir(resource_path)
+
+    with open(r'{}/{}.txt'.format(resource_path, name), 'w', encoding='utf-8') as w:
+        w.write(content)
 
 if __name__ == "__main__":
     """
