@@ -3,12 +3,13 @@
 
 import sys
 import datetime
+
+start_time = datetime.datetime.now()
 from Banana_news_module import chinatimes_list_crawler
 from Banana_news_module import ettoday_list_crawler
 from Banana_news_module import tvbs_list_crawler
 from Banana_news_module import ltn_list_crawler
-from Banana_news_module import ltn_list_crawler_for_tag
-from Banana_news_module import news_object
+from Banana_news_module import news_object_corj
 from Banana_news_module import content_crawler
 
 
@@ -16,7 +17,8 @@ def list_to_result(article_list):
     # if need, update chinatimes
 
     for i in range(len(article_list)):
-        reg_news = news_object.News()
+        reg_news = news_object_corj.News()
+        reg_news.corj = "jieba"
         reg_news.allocation(article_list[len(article_list) - 1 - i])
 
         if article_list[0]['web_name'] == "ETtoday新聞雲":
@@ -102,4 +104,5 @@ if __name__ == '__main__':
         print("{}, {}, {}".format(now, "010.prgoram abnormal. STOP!", err))
         sys.exit(0)
 
-
+    end_time = datetime.datetime.now()
+    print("spend time = {}".format(end_time-start_time))

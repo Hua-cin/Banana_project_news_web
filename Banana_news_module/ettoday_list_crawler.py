@@ -18,8 +18,7 @@ import time
 import random
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
-# exec_file_path = os.getcwd()
-# exec_file_path = '/home/daniel/anaconda3/envs/news/banana_project_news_web' # for test
+exec_file_path = os.getcwd()
 
 
 def main():
@@ -136,7 +135,7 @@ def fetch_db_newest(web):
                            port = int(key_word.loc[0, "port"]),
                            charset=str(key_word.loc[0, "charset"]))
 
-      sql_str = 'SELECT * FROM fruveg.Daniel_news ' \
+      sql_str = 'SELECT * FROM fruveg.Daniel_muti_test ' \
                 'where web_name = "{}"  ' \
                 'order by publish_time DESC limit 1;'.format(web)
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
