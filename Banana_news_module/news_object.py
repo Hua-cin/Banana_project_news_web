@@ -24,7 +24,7 @@ import pickle
 from ckiptagger import WS, POS, NER
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
-exec_file_path = os.getcwd()
+# exec_file_path = os.getcwd()
 table = "Daniel_muti_test"
 
 
