@@ -9,7 +9,7 @@ from Banana_news_module import chinatimes_list_crawler
 from Banana_news_module import ettoday_list_crawler
 from Banana_news_module import tvbs_list_crawler
 from Banana_news_module import ltn_list_crawler
-from Banana_news_module import news_object_corj
+from Banana_news_module import news_object
 from Banana_news_module import content_crawler
 
 
