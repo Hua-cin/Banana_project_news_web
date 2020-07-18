@@ -23,7 +23,9 @@ import os
 import pickle
 from ckiptagger import WS, POS, NER
 
+ckip_data_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv'
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
+# exec_file_path = '.'
 # exec_file_path = os.getcwd()
 table = "Daniel_muti_test"
 
@@ -158,7 +160,7 @@ class News:
         # trainset_tf, trainset_class, seg_corpus = load_news_data()
 
         if self.corj == 'ckip':
-            file = open("./ref_data/ckip_state", 'rb')
+            file = open("{}/ref_data/ckip_state".format(exec_file_path), 'rb')
             ckip_training_set_tf = pickle.load(file)
             ckip_training_set_class = pickle.load(file)
             ckip_seg_corpus = pickle.load(file)
@@ -169,7 +171,7 @@ class News:
             seg_corpus = ckip_seg_corpus
 
         elif self.corj =='jieba':
-            file = open("./ref_data/jieba_state", 'rb')
+            file = open("{}/ref_data/jieba_state".format(exec_file_path), 'rb')
             jieba_training_set_tf = pickle.load(file)
             jieba_training_set_class = pickle.load(file)
             jieba_seg_corpus = pickle.load(file)
@@ -343,7 +345,7 @@ def func_ckip(text):
         for temp in f_stop.readlines():
             stopword_list.append(temp.replace('\n', ''))
 
-    ws = WS("../data")
+    ws = WS("{}/data".format(ckip_data_file_path))
     ws_results = ws([text])
 
     ckip_word_count = {}
@@ -397,7 +399,7 @@ def ckip_sort_list(text, topK=100):
         for temp in f_stop.readlines():
             stopword_list.append(temp.replace('\n', ''))
 
-    ws = WS("../data")
+    ws = WS("{}/data".format(ckip_data_file_path))
     ws_results = ws([text])
 
     ckip_word_count = {}
