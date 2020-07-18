@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""
+
+20200718 add ckip function
+
+"""
+
 import requests
 import MySQLdb
 import datetime
@@ -14,7 +20,8 @@ import math
 import json
 import sys
 import os
-
+import pickle
+from ckiptagger import WS, POS, NER
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
 exec_file_path = os.getcwd()
@@ -38,6 +45,7 @@ class News:
         self.related = 99
         self.output_class = ''
         self.content = ''
+        self.corj = "" # for word cut mode use
 
     def allocation(self, row_dict):
         """
@@ -73,8 +81,11 @@ class News:
         base = pd.read_csv(r'{}/ref_data/base.csv'.format(exec_file_path))
         base_dict_list = base.to_dict('records')
 
-        # call jieba function, and get wordcut dict
-        sample_dict = func_jieba(self.content)
+        # # call jieba or ckip function, and get wordcut dict
+        if self.corj == 'ckip':
+            sample_dict = func_ckip(self.content)
+        elif self.corj == 'jieba':
+            sample_dict = func_jieba(self.content)
 
         # fetch how many '香蕉' times in sample
         if '香蕉' in sample_dict:
@@ -128,11 +139,6 @@ class News:
             # print("無相關")
             result = 0
 
-        # trainset_tf, trainset_class, seg_corpus = load_news_data()
-        # input_tf = get_article_vector(self.content, seg_corpus)
-        # self.output_class = knn_classify(input_tf, trainset_tf, trainset_class, k=3)
-        # print("class = {}".format(self.output_class))
-
         # print result and title
         print(self.title)
         print(self.url)
@@ -146,14 +152,35 @@ class News:
         # return judgt result
         return result, content_exist
 
-
     def knn_class(self):
-        trainset_tf, trainset_class, seg_corpus = load_news_data()
-        input_tf = get_article_vector(self.content, seg_corpus)
+        # trainset_tf, trainset_class, seg_corpus = load_news_data()
+
+        if self.corj == 'ckip':
+            file = open("./ref_data/ckip_state", 'rb')
+            ckip_training_set_tf = pickle.load(file)
+            ckip_training_set_class = pickle.load(file)
+            ckip_seg_corpus = pickle.load(file)
+            file.close()
+
+            trainset_tf = ckip_training_set_tf
+            trainset_class = ckip_training_set_class
+            seg_corpus = ckip_seg_corpus
+
+        elif self.corj =='jieba':
+            file = open("./ref_data/jieba_state", 'rb')
+            jieba_training_set_tf = pickle.load(file)
+            jieba_training_set_class = pickle.load(file)
+            jieba_seg_corpus = pickle.load(file)
+            file.close()
+
+            trainset_tf = jieba_training_set_tf
+            trainset_class = jieba_training_set_class
+            seg_corpus = jieba_seg_corpus
+
+        input_tf = get_article_vector(self.corj, self.content, seg_corpus)
         self.output_class = knn_classify(input_tf, trainset_tf, trainset_class, k=3)
         print("class = {}".format(self.output_class))
         print("------------------------------------------------------------------------------------------")
-
 
     def upload_to_db(self):
         """
@@ -169,7 +196,7 @@ class News:
             # setup autocommit false
             db.autocommit(False)
             now = datetime.datetime.now()
-            sql_str = 'insert into Daniel_news (web_name, publish_time, web_class, title, url, related, output_class, web_tag, log_dt) ' \
+            sql_str = 'insert into Daniel_muti_test (web_name, publish_time, web_class, title, url, related, output_class, web_tag, log_dt) ' \
                       'values(\'{}\', \'{}\', \'{}\', \'{}\', \'{}\',\'{}\', \'{}\', \'{}\', \'{}\');' \
                 .format(self.web_name, self.publish_time, self.web_class, self.title, self.url, self.related, self.output_class, self.web_tag, now)
 
@@ -181,10 +208,6 @@ class News:
 
             # close db connect
             db.close()
-
-            # # print out file
-            # name = '{} {} {}'.format(self.web_name,self.publish_time.split(' ')[0], self.title)
-            # func_out_file(name, self.content)
 
         except Exception as err:
             # close db connect
@@ -282,6 +305,7 @@ def func_jieba(text):
     jieba.load_userdict(r'{}/ref_data/mydict.txt'.format(exec_file_path))
     s = jieba.cut(text)
     jieba_word_count = {}
+
     for i in s:
         if i in jieba_word_count:
             jieba_word_count[i] += 1
@@ -303,6 +327,40 @@ def func_jieba(text):
     # return word cut result by dict
     return jieba_dict
 
+def func_ckip(text):
+    '''
+    text to sorted list
+    '''
+
+    text = text.replace('\n', ' ')
+
+    # insert stopword list
+    stopword_path = r'{}/ref_data/stopword.txt'.format(exec_file_path)
+    stopword_list = []
+    with open(stopword_path, 'r', encoding = 'utf-8') as f_stop:
+        for temp in f_stop.readlines():
+            stopword_list.append(temp.replace('\n', ''))
+
+    ws = WS("../data")
+    ws_results = ws([text])
+
+    ckip_word_count = {}
+    for i in ws_results[0]:
+        if i in ckip_word_count:
+            ckip_word_count[i] += 1
+        else:
+            ckip_word_count[i] = 1
+
+    ckip_word_list = [(k, ckip_word_count[k]) for k in ckip_word_count if
+                      (len(k) > 1) and (k not in stopword_list) and not re.match(r'[0-9a-zA-Z]+', k)]
+    ckip_word_list.sort(key=lambda item: item[1], reverse=True)
+
+    ckip_dict = {}
+    for i in ckip_word_list:
+        ckip_dict[i[0]] =i [1]
+
+    return ckip_dict
+
 def comb_key(list, dict_list):
     """
     to get distinct key for muti dict
@@ -319,86 +377,128 @@ def comb_key(list, dict_list):
     # return distinct key list
     return list
 
-
 # for knn
 # |
 # Y
-def df_to_json():
 
-    path = '{}/ref_data/article_lib'.format(exec_file_path)
-    file_list = os.listdir(path)
+def ckip_sort_list(text, topK=100):
+    '''
+    text to sorted list
+    '''
 
-    columns = ["category", "title", "content"]
-    news_total_data = []
+    text = text.replace('\n', ' ')
 
-    for i in file_list:
+    # insert stopword list
+    stopword_path = r'{}/ref_data/stopword.txt'.format(exec_file_path)
+    stopword_list = []
+    with open(stopword_path, 'r', encoding = 'utf-8') as f_stop:
+        for temp in f_stop.readlines():
+            stopword_list.append(temp.replace('\n', ''))
 
-        c = i.split('_')[1].split('相關')[0]
+    ws = WS("../data")
+    ws_results = ws([text])
 
-        path_title = path + '/' + i
-        file_title = os.listdir(path_title)
+    ckip_word_count = {}
+    for i in ws_results[0]:
+        if i in ckip_word_count:
+            ckip_word_count[i] += 1
+        else:
+            ckip_word_count[i] = 1
 
-        for y in file_title:
-            news_data = []
-            t = y.split('_')[1].split('.')[0]
-            new_content = path_title + '/' + y
-            with open(new_content, 'r', encoding='utf-8') as f:
-                a = f.read()
+    ckip_word_list = [(k, ckip_word_count[k]) for k in ckip_word_count if
+                      (len(k) > 1) and (k not in stopword_list) and not re.match(r'[0-9a-zA-Z]+', k)]
+    ckip_word_list.sort(key=lambda item: item[1], reverse=True)
 
-            news_data.append(c)
-            news_data.append(t)
-            news_data.append(a)
-            news_total_data.append(news_data)
+    word_list = []
+    for i in ckip_word_list:
+        word_list.append(i[0])
 
-    new_df = pd.DataFrame(columns=columns)
-    new_df = new_df.append(pd.DataFrame(news_total_data, columns=columns))
+    if len(word_list) >= topK:
+        new_word_list = word_list[0:topK]
+    else:
+        new_word_list = word_list
 
-    new_df_json = new_df.to_json(orient="records", force_ascii=False)
+    return new_word_list
 
-    return (new_df_json)
+# def df_to_json():
+#
+#     path = '{}/ref_data/article_lib'.format(exec_file_path)
+#     file_list = os.listdir(path)
+#
+#     columns = ["category", "title", "content"]
+#     news_total_data = []
+#
+#     for i in file_list:
+#
+#         c = i.split('_')[1].split('相關')[0]
+#
+#         path_title = path + '/' + i
+#         file_title = os.listdir(path_title)
+#
+#         for y in file_title:
+#             news_data = []
+#             t = y.split('_')[1].split('.')[0]
+#             new_content = path_title + '/' + y
+#             with open(new_content, 'r', encoding='utf-8') as f:
+#                 a = f.read()
+#
+#             news_data.append(c)
+#             news_data.append(t)
+#             news_data.append(a)
+#             news_total_data.append(news_data)
+#
+#     new_df = pd.DataFrame(columns=columns)
+#     new_df = new_df.append(pd.DataFrame(news_total_data, columns=columns))
+#
+#     new_df_json = new_df.to_json(orient="records", force_ascii=False)
+#
+#     return (new_df_json)
+#
+# def load_news_data():
+#     """
+#     新聞資料當作測試資料，產生訓練集向量與訓練集分類。
+#     :return: 訓練集的向量及訓練集分類
+#     """
+#
+#     training_set_tf = {}
+#     training_set_class = {}
+#     keywords = []
+#
+#     news_data = json.loads(df_to_json())
+#
+#     for news in news_data:
+#         training_set_class[news['title']] = news['category']
+#         # 保存每篇文章詞彙出現次數
+#         # jieba.analyse.set_stop_words('{}/ref_data/stopword.txt'.format(exec_file_path))
+#         # seg_list = jieba.analyse.extract_tags(news['content'], topK=100)
+#
+#         seg_list = ckip_sort_list(news['content'], topK=100)
+#
+#
+#         seg_content = {}
+#         for seg in seg_list:
+#             if seg in seg_content:
+#                 seg_content[seg] += 1
+#             else:
+#                 seg_content[seg] = 1
+#         # 保存文章詞彙頻率
+#         training_set_tf[news['title']] = seg_content
+#         # 獲取關鍵詞
+#         keywords.extend(seg_list)
+#     # 文章斷詞轉成向量表示
+#     seg_corpus = list(set(keywords))
+#     for title in training_set_tf:
+#         tf_list = list()
+#         for word in seg_corpus:
+#             if word in training_set_tf[title]:
+#                 tf_list.append(training_set_tf[title][word])
+#             else:
+#                 tf_list.append(0)
+#         training_set_tf[title] = tf_list
+#
+#     return (training_set_tf, training_set_class, seg_corpus)
 
-def load_news_data():
-    """
-    新聞資料當作測試資料，產生訓練集向量與訓練集分類。
-    :return: 訓練集的向量及訓練集分類
-    """
-
-    training_set_tf = {}
-    training_set_class = {}
-    keywords = []
-
-    news_data = json.loads(df_to_json())
-
-    for news in news_data:
-        training_set_class[news['title']] = news['category']
-        # 保存每篇文章詞彙出現次數
-        jieba.analyse.set_stop_words('{}/ref_data/stopword.txt'.format(exec_file_path))
-        seg_list = jieba.analyse.extract_tags(news['content'], topK=100)
-
-        seg_content = {}
-        for seg in seg_list:
-            if seg in seg_content:
-                seg_content[seg] += 1
-            else:
-                seg_content[seg] = 1
-        # 保存文章詞彙頻率
-        training_set_tf[news['title']] = seg_content
-        # 獲取關鍵詞
-        keywords.extend(jieba.analyse.extract_tags(news['content'], topK=100))
-    # 文章斷詞轉成向量表示
-    seg_corpus = list(set(keywords))
-    for title in training_set_tf:
-        tf_list = list()
-        for word in seg_corpus:
-            if word in training_set_tf[title]:
-                tf_list.append(training_set_tf[title][word])
-            else:
-                tf_list.append(0)
-        training_set_tf[title] = tf_list
-
-    return (training_set_tf, training_set_class, seg_corpus)
-
-def get_article_vector(content, seg_corpus):
+def get_article_vector(mode, content, seg_corpus):
     """
     計算要測試的文章向量。
     :param content: 文章內容
@@ -407,8 +507,13 @@ def get_article_vector(content, seg_corpus):
     """
 
     seg_content = {}
-    jieba.analyse.set_stop_words('{}/ref_data/stopword.txt'.format(exec_file_path))
-    seg_list = jieba.analyse.extract_tags(content, topK = 100)
+    if mode == 'ckip':
+        seg_list = ckip_sort_list(content, topK=100)
+    elif mode == 'jieba':
+        jieba.analyse.set_stop_words('{}/ref_data/stopword.txt'.format(exec_file_path))
+        seg_list = jieba.analyse.extract_tags(content, topK = 100)
+
+
     for seg in seg_list:
         if seg in seg_content:
             seg_content[seg] += 1
@@ -451,6 +556,8 @@ def knn_classify(input_tf, trainset_tf, trainset_class, k):
     :param k: 決定最近鄰居取k個
     :return:
     """
+
+
     tf_distance = {}
     # 計算每個訓練集合特徵關鍵字頻率向量和輸入向量的距離
     # print('1.計算向量距離')

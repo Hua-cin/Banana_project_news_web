@@ -17,8 +17,8 @@ def list_to_result(article_list):
     # if need, update chinatimes
 
     for i in range(len(article_list)):
-        reg_news = news_object_corj.News()
-        reg_news.corj = "jieba"
+        reg_news = news_object.News()
+        reg_news.corj = "ckip"
         reg_news.allocation(article_list[len(article_list) - 1 - i])
 
         if article_list[0]['web_name'] == "ETtoday新聞雲":
