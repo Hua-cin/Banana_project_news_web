@@ -13,7 +13,7 @@ import os
 
 def main():
     # content, web_tag, article_time, content_exist = ltn_content("https://news.ltn.com.tw/news/sports/breakingnews/3221247")
-    print(ettoday_content("https://house.ettoday.net/news/1762768?redirect=1"))
+    # print(ettoday_content('https://www.ettoday.net/news/20200707/1754145.htm'))
     pass
 
 def func_out_file(name, content):
@@ -219,7 +219,10 @@ def ettoday_content(url):
     article_time = datetime.datetime.strptime(sub_soup.select('time[class="date"]')[0]['datetime'].split('+')[0], "%Y-%m-%dT%H:%M:%S")
 
     # capture tag
-    web_tag = sub_soup.select('p[class="tag"] ')[0].text.split('關鍵字：')[1].replace('﹑', ';')
+    if  len(sub_soup.select('p[class="tag"] ')) > 0:
+        web_tag = sub_soup.select('p[class="tag"] ')[0].text.split('關鍵字：')[1].replace('﹑', ';')
+    else:
+        web_tag = ' '
     # print(web_tag)
 
     if content == '':

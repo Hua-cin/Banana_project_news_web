@@ -14,16 +14,15 @@ from Banana_news_module import content_crawler
 
 
 def list_to_result(article_list):
-    # if need, update chinatimes
 
     for i in range(len(article_list)):
+        print(i)
         reg_news = news_object.News()
         reg_news.corj = "ckip"
         reg_news.allocation(article_list[len(article_list) - 1 - i])
 
         if article_list[0]['web_name'] == "ETtoday新聞雲":
             reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.ettoday_content)
-
         elif article_list[0]['web_name'] == "TVBS新聞網":
             reg_news.related, content_exist = reg_news.kmeans_related(content_crawler.tvbs_content)
 
@@ -90,6 +89,8 @@ if __name__ == '__main__':
         print("{}, 008.{} start confirm..".format(now, 'ETtoday新聞雲'))
 
         ettoday_article_list = ettoday_list_crawler.article_list()
+        print(len(ettoday_article_list))
+
         if len(ettoday_article_list)>0:
             list_to_result(ettoday_article_list)
         else:

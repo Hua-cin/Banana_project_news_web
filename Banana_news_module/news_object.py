@@ -25,6 +25,8 @@ from ckiptagger import WS, POS, NER
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
 exec_file_path = os.getcwd()
+table = "Daniel_muti_test"
+
 
 class News:
     """
@@ -196,9 +198,9 @@ class News:
             # setup autocommit false
             db.autocommit(False)
             now = datetime.datetime.now()
-            sql_str = 'insert into Daniel_muti_test (web_name, publish_time, web_class, title, url, related, output_class, web_tag, log_dt) ' \
+            sql_str = 'insert into {} (web_name, publish_time, web_class, title, url, related, output_class, web_tag, log_dt) ' \
                       'values(\'{}\', \'{}\', \'{}\', \'{}\', \'{}\',\'{}\', \'{}\', \'{}\', \'{}\');' \
-                .format(self.web_name, self.publish_time, self.web_class, self.title, self.url, self.related, self.output_class, self.web_tag, now)
+                .format( table,self.web_name, self.publish_time, self.web_class, self.title, self.url, self.related, self.output_class, self.web_tag, now)
 
             # execute insert data
             cursor.execute(sql_str)

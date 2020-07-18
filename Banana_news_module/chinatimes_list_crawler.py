@@ -19,6 +19,7 @@ import random
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
 exec_file_path = os.getcwd()
+table = "Daniel_muti_test"
 
 def main():
    pass
@@ -32,7 +33,7 @@ def article_list():
    # func_check_folder("log_folder")
 
    # call fetch_db_newest function, fetch db newest data
-   db_neswest_data = fetch_db_newest()
+   db_neswest_data = fetch_db_newest('中時電子報')
 
    # if news title contain exclude word, not to fetch
    title_exclude_word_path = "{}/ref_data/title_exclude_word.txt".format(exec_file_path)
@@ -111,7 +112,7 @@ def article_list():
    return article_list
 
 
-def fetch_db_newest():
+def fetch_db_newest(web):
    '''
    fetch db the newest data for data confirm
    :return: db_neswest_data
@@ -129,9 +130,9 @@ def fetch_db_newest():
                            port = int(key_word.loc[0, "port"]),
                            charset=str(key_word.loc[0, "charset"]))
 
-      sql_str = 'SELECT * FROM fruveg.Daniel_muti_test ' \
-                'where web_name = "中時電子報"  ' \
-                'order by publish_time DESC limit 1;'
+      sql_str = 'SELECT * FROM fruveg.{} ' \
+                'where web_name = "{}"  ' \
+                'order by publish_time DESC limit 1;'.format(table, web)
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 
    except Exception as err:

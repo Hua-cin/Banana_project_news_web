@@ -19,10 +19,10 @@ import random
 
 exec_file_path = '/home/lazyso/anaconda3/envs/AutoNewsenv/banana_project_news_web'
 exec_file_path = os.getcwd()
+table = "Daniel_muti_test"
 
 
 def main():
-   print(ettoday_list())
    pass
 
 def article_list():
@@ -135,9 +135,9 @@ def fetch_db_newest(web):
                            port = int(key_word.loc[0, "port"]),
                            charset=str(key_word.loc[0, "charset"]))
 
-      sql_str = 'SELECT * FROM fruveg.Daniel_muti_test ' \
+      sql_str = 'SELECT * FROM fruveg.{} ' \
                 'where web_name = "{}"  ' \
-                'order by publish_time DESC limit 1;'.format(web)
+                'order by publish_time DESC limit 1;'.format(table, web)
       db_neswest_data_df = pd.read_sql(sql=sql_str, con=db)
 
    except Exception as err:
